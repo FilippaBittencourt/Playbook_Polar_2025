@@ -5,15 +5,16 @@ interface ArticleContentProps {
 
 const articleData: { [key: string]: any } = {
   "home": {
-    title: "Bem-vindo ao Playbook Comercial Polar",
+    title: "Bem-vindo ao Playbook Comercial da Polar",
     content: `
-      <p class="text-lg mb-6 text-gray-700">Este é o centro de conhecimento comercial da Polar, sua fonte definitiva para informações sobre práticas, processos e diretrizes comerciais.</p>
+      <p class="text-lg mb-6 text-gray-700">Este é o centro de conhecimento comercial da Polar, sua fonte definitiva para informações sobre produtos, práticas, processos e diretrizes comerciais.</p>
       
       <div class="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
         <h3 class="text-xl font-semibold text-blue-800 mb-3">O que você encontrará aqui:</h3>
         <ul class="space-y-2 text-blue-700">
           <li>• Estrutura organizacional e processos comerciais</li>
-          <li>• Portfólio completo de produtos e soluções</li>
+          <li>• Equipe comercial e regiões atendidas </li>
+          <li>• Portfólio de produtos e soluções</li>
           <li>• Ferramentas e sistemas para o dia a dia</li>
           <li>• Políticas comerciais e diretrizes de vendas</li>
           <li>• Indicadores de performance e metas</li>
@@ -34,12 +35,17 @@ const articleData: { [key: string]: any } = {
     `
   },
   "sobre": {
-    title: "Sobre a Polar Comercial",
+    title: "Conheça a Polar",
     content: `
-      <p class="text-lg mb-6 text-gray-700">A Polar Comercial é uma empresa especializada em componentes tecnológicos para obras da construção civil, oferecendo soluções inovadoras e de alta qualidade para o mercado brasileiro.</p>
+      <p class="text-lg mb-6 text-gray-700">A Polar é uma das três unidades de negócio da Ambar Tech e atua há mais de 30 anos no mercado da construção civil, oferecendo componentes tecnológicos inovadores e de alta qualidade. Presente em obras de grandes construtoras e instaladoras no Brasil e em outros países, a Polar se consolidou como referência em soluções para infraestrutura elétrica, hidráulica, climatização e acessórios.</p>
+
+      <p class="text-lg mb-6 text-gray-700">Com ampla experiência e profundo conhecimento técnico, a Polar desenvolveu sistemas que aumentam a produtividade da mão de obra, reduzem falhas na execução e geram economia nas etapas de instalação. Dessa forma, contribui para obras mais eficientes, com alto padrão de qualidade e confiabilidade.
+      </p>
       
       <h3 class="text-xl font-semibold mb-4 text-gray-800">Nossa Missão</h3>
-      <p class="mb-6 text-gray-700">Fornecer componentes tecnológicos de excelência para a construção civil, contribuindo para o desenvolvimento de obras mais eficientes, sustentáveis e duradouras.</p>
+      <p class="mb-6 text-gray-700">
+      Fornecer componentes tecnológicos de excelência para a construção civil, contribuindo para o desenvolvimento de obras mais eficientes, sustentáveis e duradouras. Nosso compromisso é com soluções inteligentes que descomplicam o dia a dia da construção: <em class="italic">construindo o simples</em>.
+      </p>
       
       <h3 class="text-xl font-semibold mb-4 text-gray-800">Nossos Valores</h3>
       <div class="grid md:grid-cols-2 gap-6 mb-8">
@@ -65,7 +71,7 @@ const articleData: { [key: string]: any } = {
   "liderança": {
     title: "Estrutura de Liderança",
     content: `
-      <p class="text-lg mb-6 text-gray-700">Conheça a estrutura de liderança da Polar Comercial e os principais executivos responsáveis pela direção estratégica da empresa.</p>
+      <p class="text-lg mb-6 text-gray-700">Conheça a liderança da Polar e os principais responsáveis pela direção estratégica da empresa.</p>
       
       <div class="space-y-6">
         <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
@@ -148,11 +154,162 @@ const articleData: { [key: string]: any } = {
       </div>
     `
   },
-  "consultores": {
-    title: "Conheça nossos consultores",
-    content: `
-      <p class="text-lg mb-6 text-gray-700">Nossos consultores são excelentes e conhecem todo o nosso portfolio. Veja quem são por região:</p>
+  "comercial": {
+  title: "Time Comercial",
+  content: `
+    <p class="text-lg mb-6 text-gray-700">O time comercial da Polar é formado por profissionais que atuam em campo, em contato direto com construtoras e instaladoras de todo o país. Nossa estrutura foi desenhada para garantir cobertura nacional com agilidade, conhecimento técnico e proximidade. Essa estrutura permite um acompanhamento personalizado de cada cliente, com soluções adaptadas à  realidade local e alinhadas às diretrizes da Polar.</p>
+
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 mb-8">
+      <h3 class="text-xl font-semibold text-blue-800 mb-3">O que você encontrará nesta seção:</h3>
+      <ul class="space-y-2 text-blue-700">
+        <li>• Conheça os consultores que representam a Polar nas diferentes regiões</li>
+        <li>• Visualize como é feita a divisão de territórios e estados atendidos</li>
+        <li>• Entenda as diferenças entre o time de canais e o time de construção</li>
+      </ul>
+    </div>
     `
+  },
+  "consultores": {
+    title: "Nossos Consultores",
+    content: `
+      <p class="text-lg mb-6 text-gray-700">Conheça a nossa equipe de consultores, formada por profissionais dedicados, especializados em atender clientes com excelência em diferentes regiões do Brasil.</p>
+
+      <div class="grid md:grid-cols-3 gap-6 mb-12">
+  <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm text-center">
+    <img 
+      src="/consultores/felipe-fabres.jpg" 
+      alt="Foto de Felipe Fabres" 
+      class="w-32 h-32 mx-auto rounded-full mb-4 object-cover shadow-md"
+    />
+    <h4 class="text-lg font-semibold text-gray-800">Felipe Fabres</h4>
+    <p class="text-sm text-gray-500 mb-2">Região SPI 02</p>
+    <p class="text-sm text-gray-600 mb-1">Especialista em climatização</p>
+    <a href="mailto:felipe.fabres@ambar.tech" class="text-blue-600 hover:underline text-sm">
+      felipe.fabres@ambar.tech
+    </a>
+    <div class="mt-3 flex justify-center space-x-4">
+      <a href="https://wa.me/5511999999999" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <img src="/icons/whatsapp.svg" class="w-5 h-5" alt="WhatsApp" />
+      </a>
+      <a href="https://linkedin.com/in/felipefabres" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <img src="/icons/linkedin.svg" class="w-5 h-5" alt="LinkedIn" />
+      </a>
+    </div>
+  </div>
+  <!-- Repita para outros consultores -->
+</div>
+      
+    `
+  },
+  "regiões": {
+    title: "Regiões",
+    content: `
+      <p class="text-lg mb-6 text-gray-700">Nossos consultores são responsáveis por representar a Polar em campo, oferecendo suporte técnico e comercial às construtoras e instaladoras em cada região do Brasil. Cada profissional atua em uma área específica, garantindo atendimento personalizado e profundo conhecimento das necessidades locais.</p>
+
+      <p class="text-lg mb-6 text-gray-700">Confira abaixo o mapa com a divisão dos territórios atendidos, seguido por uma tabela com os estados, regiões comerciais e os consultores responsáveis. Essa organização garante cobertura eficiente em todo o Brasil, com atendimento próximo e especializado.</p>
+
+      <div class="flex justify-center mb-8">
+      <img 
+        src="/mapa.png" 
+        alt="Mapa das regiões atendidas" 
+        class="w-[600px] max-w-full h-auto rounded-lg shadow-md"
+      />
+    </div>
+
+    <h3 class="text-xl font-semibold mb-4 text-gray-800">Divisão Territorial</h3>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="min-w-full text-left border border-gray-300">
+        <thead class="bg-blue-100 text-blue-800">
+          <tr>
+            <th class="px-4 py-2 border-b">Estados</th>
+            <th class="px-4 py-2 border-b">Região Polar</th>
+            <th class="px-4 py-2 border-b">Consultor Externo</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          <tr><td class="px-4 py-2 border-b">SPC1</td><td class="px-4 py-2 border-b">REG 01 - SPC 01</td><td class="px-4 py-2 border-b">VAGO</td></tr>
+          <tr><td class="px-4 py-2 border-b">SPI2</td><td class="px-4 py-2 border-b">REG 02 - SPI 02</td><td class="px-4 py-2 border-b">Felipe Fabres</td></tr>
+          <tr><td class="px-4 py-2 border-b">SPC3</td><td class="px-4 py-2 border-b">REG 03 - SPC 03</td><td class="px-4 py-2 border-b">Heraldo Almeida</td></tr>
+          <tr><td class="px-4 py-2 border-b">PR</td><td class="px-4 py-2 border-b">REG 04 - SUL 01</td><td class="px-4 py-2 border-b">Waldir Oliveira</td></tr>
+          <tr><td class="px-4 py-2 border-b">RS</td><td class="px-4 py-2 border-b">REG 05 - SUL 02</td><td class="px-4 py-2 border-b">Gustavo Lanzarini</td></tr>
+          <tr><td class="px-4 py-2 border-b">MG</td><td class="px-4 py-2 border-b">REG 06 - MG</td><td class="px-4 py-2 border-b">Edson Coura</td></tr>
+          <tr><td class="px-4 py-2 border-b">ES-RJ</td><td class="px-4 py-2 border-b">REG 07 - RJ</td><td class="px-4 py-2 border-b">VAGO</td></tr>
+          <tr><td class="px-4 py-2 border-b">AL-PB-PE-SE</td><td class="px-4 py-2 border-b">REG 08 - NE1</td><td class="px-4 py-2 border-b">Robertt Amorim</td></tr>
+          <tr><td class="px-4 py-2 border-b">CE-PI-RN-TO</td><td class="px-4 py-2 border-b">REG 09 - NE2</td><td class="px-4 py-2 border-b">Rafael Xerez</td></tr>
+          <tr><td class="px-4 py-2 border-b">DF-GO</td><td class="px-4 py-2 border-b">REG 10 - CO</td><td class="px-4 py-2 border-b">Gabriel Naum</td></tr>
+          <tr><td class="px-4 py-2 border-b">SPI3</td><td class="px-4 py-2 border-b">REG 11 - SPI 03</td><td class="px-4 py-2 border-b">VAGO</td></tr>
+          <tr><td class="px-4 py-2 border-b">MS-MT-RO</td><td class="px-4 py-2 border-b">REG 12 - MS/MT</td><td class="px-4 py-2 border-b">Edilberto Rasche</td></tr>
+          <tr><td class="px-4 py-2 border-b">BA</td><td class="px-4 py-2 border-b">REG 13 - BA</td><td class="px-4 py-2 border-b">Pryscilla Pequeno</td></tr>
+          <tr><td class="px-4 py-2 border-b">SPI4</td><td class="px-4 py-2 border-b">REG 14 - SPI 04</td><td class="px-4 py-2 border-b">Vitor Vitorello</td></tr>
+          <tr><td class="px-4 py-2 border-b">SC</td><td class="px-4 py-2 border-b">REG 15 - SUL 03</td><td class="px-4 py-2 border-b">Priscila Dutra</td></tr>
+          <tr><td class="px-4 py-2 border-b">AC-RR-AM</td><td class="px-4 py-2 border-b">REG 16 - N1</td><td class="px-4 py-2 border-b">Caio Pacheco</td></tr>
+          <tr><td class="px-4 py-2 border-b">MA-PA-AP</td><td class="px-4 py-2 border-b">REG 17 - N2</td><td class="px-4 py-2 border-b">João Araújo</td></tr>
+          <tr><td class="px-4 py-2 border-b">SP VALE</td><td class="px-4 py-2 border-b">REG 18 - SPI VALE</td><td class="px-4 py-2 border-b">Luis Gustavo Santos</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mb-6 text-gray-700">O estado de São Paulo, devido à sua extensão territorial e alta concentração de obras, foi segmentado em diversas regiões comerciais para otimizar o atendimento. Essas regiões são classificadas como <strong>SPC</strong> (São Paulo Capital) e <strong>SPI</strong> (São Paulo Interior), e cada uma conta com um consultor responsável por uma área específica. Essa divisão permite maior proximidade com os clientes e um suporte mais ágil e personalizado.</p>
+    
+    <p class="mb-6 text-gray-700">Para visualizar a divisão completa e detalhes de cada região, <a href="https://docs.google.com/spreadsheets/d/1YDqEb4LRP3M6YOlXrUkHdSlnUS5i1AKN/edit?gid=393594404#gid=393594404" class="text-blue-600 hover:underline" target="_blank">acesse este link</a>.</p>
+    `
+  },
+  "métodos": {
+    title: "Métodos Construtivos",
+    content: `
+    <p class="text-lg mb-6 text-gray-700">A atuação da Polar contempla diferentes métodos construtivos adotados pelo mercado. Nesta seção, apresentamos um panorama dos principais sistemas aplicados nas construções atendidas.</p>
+
+      <p class="mb-6 text-gray-700">
+
+  <div>
+    <h3 class="text-xl font-semibold  mb-4 text-gray-800">Parede de Concreto</h3>
+    <p class="mb-6 text-gray-700">Método que utiliza formas para moldar, no próprio local da obra, paredes estruturais em concreto armado. Garante agilidade na execução, padronização e alto desempenho em estanqueidade e resistência.</p>
+      <div class="flex justify-center mb-8">
+        <img 
+          src="/concreto.png" 
+          alt="Obra em parede de concreto"
+          class="w-full max-w-md mx-auto h-auto rounded-lg shadow-md"
+        />
+      </div>
+  </div>
+
+  <div>
+    <h3 class="text-xl font-semibold  mb-4 text-gray-800">Alvenaria Estrutural</h3>
+    <p class="mb-6 text-gray-700">A alvenaria estrutural é um conceito de sistema construtivo, onde toda alvenaria está envolvida diretamente na sustentação de uma obra. Refere-se de um processo construtivo, no qual as paredes têm função estrutural, ou seja, são autoportantes. Dessa forma, fica encarregada da transmissão das cargas até a fundação.</p>
+    <div class="flex justify-center mb-8">
+        <img 
+          src="/estrutural.png" 
+          alt="Obra em alvenaria estrutural"
+          class="w-full max-w-md mx-auto h-auto rounded-lg shadow-md"
+        />
+      </div>
+  </div>
+
+  <div>
+    <h3 class="text-xl font-semibold  mb-4 text-gray-800">Alvenaria de Vedação</h3>
+    <p class="mb-6 text-gray-700">A alvenaria de vedação tem a finalidade exclusiva de fechar o espaço compreendido entre vigas e pilares de uma estrutura de concreto armado. É o método construtivo mais utilizado para vedar e separar ambientes de casas e edifícios no Brasil, sendo composta por blocos cerâmicos ou blocos de concreto sobrepostos com o uso de argamassa (mistura de água, cimento e areia).</p>
+    <div class="flex justify-center mb-8">
+        <img 
+          src="/vedacao.png" 
+          alt="Obra em alvenaria de vedação"
+          class="w-full max-w-md mx-auto h-auto rounded-lg shadow-md"
+        />
+      </div>
+  </div>
+
+  <div>
+    <h3 class="text-xl font-semibold  mb-4 text-gray-800">Drywall</h3>
+    <p class="mb-6 text-gray-700">Drywall é o sistema para construção de paredes e forros, assim, dispensando os métodos convencionais das construções de alvenaria. Combina estruturas de aço galvanizado com chapas de gesso de alta resistência mecânica e acústica, não necessitando de argamassa. Este sistema geralmente é aplicado no Brasil, em conjunto com os sistemas apresentados nos slides anteriores, como divisão de cômodos internos.</p>
+   </div>
+    <div class="flex justify-center mb-8">
+        <img 
+          src="/drywall.png" 
+          alt="Obra em drywall"
+          class="w-full max-w-md mx-auto h-auto rounded-lg shadow-md"
+        />
+      </div>
+  `
   }
 };
 

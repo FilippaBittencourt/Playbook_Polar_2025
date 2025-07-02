@@ -49,10 +49,15 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Contato (sem link) */}
+          {/* Contato (com link mailto) */}
           <div className="text-right">
             <h3 className="text-lg font-semibold mb-2 text-blue-300">Dúvidas ou sugestões?</h3>
-            <p className="text-gray-300 italic">filippa.bittencourt@ambar.tech</p>
+            <a
+              href="mailto:filippa.bittencourt@ambar.tech"
+              className="text-gray-300 italic hover:underline"
+            >
+              filippa.bittencourt@ambar.tech
+            </a>
           </div>
         </div>
 

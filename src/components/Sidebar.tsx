@@ -20,57 +20,65 @@ interface SidebarProps {
 const menuItems: MenuItem[] = [
   {
     id: 'home',
-    title: 'Home'
+    title: '1. Home'
   },
   {
     id: 'sobre',
-    title: 'Quem somos?',
+    title: '2. Quem somos?',
   },
   {
     id: 'liderança',
-    title: 'Liderança',
+    title: '3. Liderança',
   },
   {
     id: 'comercial',
-    title: 'Time comercial',
+    title: '4. Time comercial',
     subcategories:
     [
       {
         id: 'consultores',
-        title: 'Nossos consultores',
+        title: '4.1 Nossos consultores',
       },
       {
         id: 'regiões',
-        title: 'Regiões atendidas'
+        title: '4.2 Regiões atendidas'
       },
       {
         id: 'divisão',
-        title: 'Canais e construção'
+        title: '4.3 Canais e construção'
       }
     ]
   },
   {
     id: 'produtos',
-    title: 'Portfólio',
+    title: '5. Portfólio',
     subcategories:
     [
       {
         id: 'métodos',
-        title: 'Métodos construtivos'
+        title: '5.1 Métodos construtivos'
       },
       {
         id: 'principais',
-        title: 'Principais produtos'
+        title: '5.2 Principais produtos'
       }
     ]
   },
   {
     id: 'ferramentas',
-    title: 'Ferramentas',
+    title: '6. Ferramentas',
   },
   {
     id: 'vendas',
-    title: 'Processo de vendas',
+    title: '7. Processo de vendas',
+  },
+  {
+    id: 'indicadores',
+    title: '8. Indicadores e metas',
+  },
+  {
+    id: 'politicas',
+    title: '9. Política comercial'
   }
 ];
 

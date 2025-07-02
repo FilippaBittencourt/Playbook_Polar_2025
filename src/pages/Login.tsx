@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -139,6 +138,16 @@ const Login = () => {
             </form>
           </CardContent>
         </Card>
+
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Esqueceu a senha? Entre em contato com{" "}
+          <a
+            href="mailto:filippa.bittencourt@polar.com"
+            className="text-blue-600 hover:underline"
+          >
+            filippa.bittencourt@ambar.tech
+          </a>
+        </p>
 
         <div className="text-center mt-8 text-gray-500 text-xs">
           <p>© 2025 Polar Comercial</p>

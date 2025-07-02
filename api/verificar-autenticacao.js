@@ -1,3 +1,5 @@
+import { usuarios } from "./usuarios.js";
+
 export default function handler(req, res) {
   const cookie = req.headers.cookie || '';
 
@@ -10,7 +12,7 @@ export default function handler(req, res) {
     const usuario = decodeURIComponent(usuarioCookie.split('=')[1]);
 
     // Lista de usuários válidos
-    const usuariosValidos = ['ana', 'bruno', 'admin', 'lippa'];
+    const usuariosValidos = usuarios.map(usuario => usuario.login);
 
     // Verifica se o valor do cookie é um usuário válido
     if (usuariosValidos.includes(usuario)) {
