@@ -21,7 +21,11 @@ const Login = () => {
         });
         const data = await res.json();
         if (data.autenticado) {
-          navigate('/home');
+          if (data.usuario === 'admin') {
+            navigate('/admin');
+          } else {
+            navigate('/home');
+          }
         }
       } catch (err) {
         console.error('Erro ao verificar autenticação:', err);
@@ -48,7 +52,11 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.sucesso) {
-        navigate('/home');
+        if (username === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
       } else {
         setError(data.mensagem || 'Usuário ou senha inválidos');
       }

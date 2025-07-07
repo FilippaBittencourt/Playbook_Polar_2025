@@ -1,8 +1,9 @@
 // src/components/PrivateRoute.tsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
   const [autenticado, setAutenticado] = useState<boolean | null>(null);
@@ -40,7 +41,7 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
     );
   }
 
-  return children;
+  return <>{children}</>; // aceita múltiplos filhos
 };
 
 export default PrivateRoute;

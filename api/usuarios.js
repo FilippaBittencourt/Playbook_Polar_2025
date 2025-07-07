@@ -1,4 +1,5 @@
 export const usuarios = [
+  { login: 'admin', senha: 'adminPolar'},
   { login: 'renan_batista', senha: 'renanPolar2025!' },
   { login: 'felipe_fabres', senha: 'fePolar2025@' },
   { login: 'heraldo_almeida', senha: 'heraldoPolar2025#' },
