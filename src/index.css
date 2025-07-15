@@ -101,3 +101,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bloco-destaque {
+  @apply bg-blue-50 border-l-4 border-blue-500 p-6 mb-8 text-blue-800;
+}
+
+.card-wrapper {
+  @apply grid md:grid-cols-2 gap-4 mb-8;
+}
+
+.card-destaque{
+  @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 cursor-pointer;
+}
+
+.h4-card{
+  @apply font-semibold text-gray-800 -mt-0;
+}
+
+.card-consultor {
+  @apply flex items-center p-0 px-4 bg-white rounded-lg shadow w-full max-w-md gap-6 hover:shadow-md transition-shadow cursor-pointer;
+}
+
+
+.card-info {
+  @apply text-sm text-gray-700 leading-tight;
+}
+
+.card-info p {
+  @apply m-0 p-0 -mt-0
+}
+
+.foto-consultor {
+  @apply w-24 h-24 rounded-full object-cover shadow-sm flex-shrink-0;
+}
+
+.link-consultor {
+  @apply hover:underline;
+}
+
+.imagem-metodo {
+  @apply w-[400px] max-w-full h-auto mx-auto my-4 rounded-lg;
+}

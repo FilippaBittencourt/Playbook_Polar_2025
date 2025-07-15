@@ -1,8 +1,8 @@
 // src/pages/Admin.tsx
-import { useState, useEffect } from 'react';
-import { useConteudo, MenuItem } from '@/context/ConteudoContext';
-import { marked } from 'marked';
-import AdminSidebar from '@/components/AdminSidebar';
+import { useState, useEffect } from 'react'
+import { useConteudo, MenuItem } from '@/context/ConteudoContext'
+import { marked } from 'marked'
+import AdminSidebar from '@/components/AdminSidebar'
 
 const nomesDasSecoes: Record<string, string> = {
   home: "Home",
@@ -17,137 +17,87 @@ const nomesDasSecoes: Record<string, string> = {
   ferramentas: "Ferramentas",
   indicadores: "Indicadores e metas",
   politicas: "Política comercial",
-};
+}
 
 const Admin = () => {
-  const { conteudo, atualizarConteudo, menu, atualizarMenu } = useConteudo();
+  const { conteudo, atualizarConteudo, menu, atualizarMenu } = useConteudo()
 
-  // seleção e edição de conteúdo
-  const [selecao, setSelecao] = useState<string>('home');
-  const [markdown, setMarkdown] = useState<string>('');
-  const [originalMarkdown, setOriginalMarkdown] = useState<string>('');
-  const [previewAtivo, setPreviewAtivo] = useState<boolean>(false);
-  const [previewHTML, setPreviewHTML] = useState<string>('');
+  // edição de conteúdo
+  const [selecao, setSelecao] = useState<string>('home')
+  const [markdown, setMarkdown] = useState<string>('')
+  const [originalMarkdown, setOriginalMarkdown] = useState<string>('')
+  const [previewAtivo, setPreviewAtivo] = useState<boolean>(false)
+  const [previewHTML, setPreviewHTML] = useState<string>('')
 
   // gerenciamento de menu
-  const [novaChave, setNovaChave] = useState<string>('');
-  const [novoTitulo, setNovoTitulo] = useState<string>('');
-  const [novoPai, setNovoPai] = useState<string>('');
+  const [novaChave, setNovaChave] = useState<string>('')
+  const [novoTitulo, setNovoTitulo] = useState<string>('')
+  const [novoPai, setNovoPai] = useState<string>('')
 
-  // carrega o markdown ao mudar de seção
+  // carrega o markdown quando muda a seção
   useEffect(() => {
-    const md = conteudo[selecao] || '';
-    setMarkdown(md);
-    setOriginalMarkdown(md);
-    setPreviewAtivo(false);
-  }, [selecao, conteudo]);
+    const md = conteudo[selecao] || ''
+    setMarkdown(md)
+    setOriginalMarkdown(md)
+    setPreviewAtivo(false)
+  }, [selecao, conteudo])
 
-  // atualiza o preview lidando com string ou Promise<string>
+  // converte PARA HTML de forma síncrona OU assíncrona
   useEffect(() => {
-    const resultado = marked.parse(markdown);
-    if (typeof resultado === 'string') {
-      setPreviewHTML(resultado);
+    const parsed = marked.parse(markdown)
+    if (typeof parsed === 'string') {
+      setPreviewHTML(parsed)
     } else {
-      resultado.then(html => setPreviewHTML(html));
+      parsed.then(html => setPreviewHTML(html))
     }
-  }, [markdown]);
+  }, [markdown])
 
-  // salvar conteúdo
+  // salva o conteúdo editado
   const handleSalvarConteudo = async () => {
-    await atualizarConteudo(selecao, markdown);
-    setOriginalMarkdown(markdown);
-    alert(`Seção "${nomesDasSecoes[selecao] || selecao}" atualizada com sucesso!`);
-  };
+    await atualizarConteudo(selecao, markdown)
+    setOriginalMarkdown(markdown)
+    alert(`Seção "${nomesDasSecoes[selecao] || selecao}" atualizada com sucesso!`)
+  }
 
-  // descartar edição
+  // descarta alterações
   const handleDescartar = () => {
-    setMarkdown(originalMarkdown);
-  };
+    setMarkdown(originalMarkdown)
+  }
 
-  // adicionar nova seção/subseção
+  // adiciona nova seção ou subseção
   const handleAdicionarSecao = async () => {
     if (!novaChave.trim() || !novoTitulo.trim()) {
-      return alert('Chave e título são obrigatórios.');
+      return alert('Chave e título são obrigatórios.')
     }
     if (menu.some(item => item.chave === novaChave)) {
-      return alert('Já existe uma seção com essa chave.');
+      return alert('Já existe uma seção com essa chave.')
     }
     const novoMenu: MenuItem[] = [
       ...menu,
       { chave: novaChave, titulo: novoTitulo, pai: novoPai || undefined },
-    ];
-    await atualizarMenu(novoMenu);
-    setNovaChave('');
-    setNovoTitulo('');
-    setNovoPai('');
-  };
+    ]
+    await atualizarMenu(novoMenu)
+    setNovaChave('')
+    setNovoTitulo('')
+    setNovoPai('')
+  }
 
-  // remover seção/subseção
+  // remove uma seção ou subseção
   const handleRemoverSecao = async (chave: string) => {
-    if (!confirm('Tem certeza que deseja remover esta seção?')) return;
-    const novoMenu = menu.filter(item => item.chave !== chave);
-    await atualizarMenu(novoMenu);
-    if (selecao === chave) setSelecao('home');
-  };
+    if (!confirm('Tem certeza que deseja remover esta seção?')) return
+    const novoMenu = menu.filter(item => item.chave !== chave)
+    await atualizarMenu(novoMenu)
+    if (selecao === chave) setSelecao('home')
+  }
 
-  const houveMudanca = markdown !== originalMarkdown;
+  const houveMudanca = markdown !== originalMarkdown
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       <AdminSidebar selecao={selecao} onSelect={setSelecao} />
 
       <main className="flex-1 p-8 space-y-6 overflow-y-auto">
-        {/* Gerenciar Seções */}
-        <section className="bg-gray-100 p-4 rounded">
-          <h2 className="text-lg font-semibold mb-3">Gerenciar Seções</h2>
-          <div className="flex flex-wrap gap-2 mb-4">
-            <input
-              placeholder="Chave (ex: novoservico)"
-              value={novaChave}
-              onChange={e => setNovaChave(e.target.value)}
-              className="border px-2 py-1 rounded"
-            />
-            <input
-              placeholder="Título (ex: Novo Serviço)"
-              value={novoTitulo}
-              onChange={e => setNovoTitulo(e.target.value)}
-              className="border px-2 py-1 rounded"
-            />
-            <select
-              value={novoPai}
-              onChange={e => setNovoPai(e.target.value)}
-              className="border px-2 py-1 rounded"
-            >
-              <option value="">Sem pai (seção principal)</option>
-              {menu.map(item => (
-                <option key={item.chave} value={item.chave}>
-                  {item.titulo}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleAdicionarSecao}
-              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
-            >
-              Adicionar
-            </button>
-          </div>
-          <ul className="divide-y">
-            {menu.map(item => (
-              <li key={item.chave} className="flex justify-between items-center py-1">
-                <span>{item.pai ? `— ${item.titulo}` : item.titulo}</span>
-                <button
-                  onClick={() => handleRemoverSecao(item.chave)}
-                  className="text-red-600 hover:underline text-sm"
-                >
-                  Remover
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Editor de Conteúdo */}
+        {/* === Editor de Conteúdo (em cima) === */}
         <section className="bg-white p-6 rounded shadow">
           <header className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-blue-700">
@@ -207,9 +157,62 @@ const Admin = () => {
             </button>
           </div>
         </section>
+
+        {/* === Gerenciar Seções (embaixo) === */}
+        <section className="bg-gray-100 p-4 rounded">
+          <h2 className="text-lg font-semibold mb-3">Gerenciar Seções</h2>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <input
+              placeholder="Chave (ex: novoservico)"
+              value={novaChave}
+              onChange={e => setNovaChave(e.target.value)}
+              className="border px-2 py-1 rounded"
+            />
+            <input
+              placeholder="Título (ex: Novo Serviço)"
+              value={novoTitulo}
+              onChange={e => setNovoTitulo(e.target.value)}
+              className="border px-2 py-1 rounded"
+            />
+            <select
+              value={novoPai}
+              onChange={e => setNovoPai(e.target.value)}
+              className="border px-2 py-1 rounded"
+            >
+              <option value="">Sem pai (seção principal)</option>
+              {menu.map(item => (
+                <option key={item.chave} value={item.chave}>
+                  {item.titulo}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleAdicionarSecao}
+              className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+            >
+              Adicionar
+            </button>
+          </div>
+          <ul className="divide-y">
+            {menu.map(item => (
+              <li
+                key={item.chave}
+                className="flex justify-between items-center py-1"
+              >
+                <span>{item.pai ? `— ${item.titulo}` : item.titulo}</span>
+                <button
+                  onClick={() => handleRemoverSecao(item.chave)}
+                  className="text-red-600 hover:underline text-sm"
+                >
+                  Remover
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default Admin;
+export default Admin

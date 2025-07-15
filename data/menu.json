@@ -59,14 +59,5 @@
   {
     "chave": "politicas",
     "titulo": "Política comercial"
-  },
-  {
-    "chave": "teste",
-    "titulo": "Teste"
-  },
-  {
-    "chave": "teste2",
-    "titulo": "teste2",
-    "pai": "teste"
   }
 ]

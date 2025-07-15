@@ -1,36 +1,45 @@
 // src/components/PrivateRoute.tsx
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import React from 'react';
+import React, { useEffect, useState, ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate();
-  const [carregando, setCarregando] = useState(true);
-  const [autenticado, setAutenticado] = useState<boolean | null>(null);
+interface PrivateRouteProps {
+  children: ReactNode
+  adminOnly?: boolean
+}
+
+const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true)
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null)
 
   useEffect(() => {
-    const verificar = async () => {
+    const verify = async () => {
       try {
         const res = await fetch('/api/verificar-autenticacao', {
           credentials: 'include',
-        });
-        const data = await res.json();
+        })
+        const data = await res.json()
         if (data.autenticado) {
-          setAutenticado(true);
+          // se rota for adminOnly e não for admin, redireciona
+          if (adminOnly && data.usuario !== 'admin') {
+            navigate('/home', { replace: true })
+          } else {
+            setAuthenticated(true)
+          }
         } else {
-          navigate('/login', { replace: true });
+          navigate('/login', { replace: true })
         }
-      } catch (err) {
-        navigate('/login', { replace: true });
+      } catch {
+        navigate('/login', { replace: true })
       } finally {
-        setCarregando(false);
+        setLoading(false)
       }
-    };
+    }
 
-    verificar();
-  }, [navigate]);
+    verify()
+  }, [navigate, adminOnly])
 
-  if (carregando || autenticado === null) {
+  if (loading || authenticated === null) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <div className="flex flex-col items-center">
@@ -38,10 +47,10 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
           <p className="text-gray-600 text-lg font-medium">Verificando autenticação...</p>
         </div>
       </div>
-    );
+    )
   }
 
-  return <>{children}</>; // aceita múltiplos filhos
-};
+  return <>{children}</>
+}
 
-export default PrivateRoute;
+export default PrivateRoute
