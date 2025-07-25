@@ -59,5 +59,15 @@
     "chave": "Produtos",
     "titulo": "Produtos",
     "pai": "portfolio"
+  },
+  {
+    "chave": "Glossário",
+    "titulo": "Glossário",
+    "pai": "indicadores"
+  },
+  {
+    "chave": "Fases",
+    "titulo": "Fases",
+    "pai": "vendas"
   }
 ]
