@@ -11,7 +11,7 @@ const Footer = () => {
             <div className="space-y-1 text-gray-300">
               <p>© 2025 Polar Comercial</p>
               <p>Playbook Comercial desenvolvido para uso interno</p>
-              <p>Última atualização: Junho 2025</p>
+              <p>Última atualização: Julho 2025</p>
             </div>
           </div>
 

@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRedirect from "./components/ProtectedRedirect";
 import PrivateRoute from "./components/PrivateRoute";
 import Admin from "./pages/Admin";
+import { AdminHeader } from "@/components/AdminHeader"; // ← certifique-se de criar este componente em src/components/AdminHeader.tsx
 
 import { ConteudoProvider } from "./context/ConteudoContext";
 
@@ -25,8 +26,11 @@ const App = () => (
       <ConteudoProvider>
         <BrowserRouter>
           <Routes>
+            {/* rotas públicas */}
             <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
 
+            {/* rota principal pós‑login */}
             <Route
               path="/home"
               element={
@@ -36,17 +40,20 @@ const App = () => (
               }
             />
 
+            {/* painel admin */}
             <Route
               path="/admin"
               element={
-                // Somente admin pode acessar
                 <PrivateRoute adminOnly>
-                  <Admin />
+                  <>
+                    <AdminHeader />  {/* botão “Sair” */}
+                    <Admin />
+                  </>
                 </PrivateRoute>
               }
             />
 
-            <Route path="/logout" element={<Logout />} />
+            {/* raiz e 404 */}
             <Route path="/" element={<ProtectedRedirect />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

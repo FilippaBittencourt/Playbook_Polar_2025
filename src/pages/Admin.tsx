@@ -22,19 +22,19 @@ const nomesDasSecoes: Record<string, string> = {
 const Admin = () => {
   const { conteudo, atualizarConteudo, menu, atualizarMenu } = useConteudo()
 
-  // edição de conteúdo
   const [selecao, setSelecao] = useState<string>('home')
   const [markdown, setMarkdown] = useState<string>('')
   const [originalMarkdown, setOriginalMarkdown] = useState<string>('')
   const [previewAtivo, setPreviewAtivo] = useState<boolean>(false)
   const [previewHTML, setPreviewHTML] = useState<string>('')
 
-  // gerenciamento de menu
   const [novaChave, setNovaChave] = useState<string>('')
   const [novoTitulo, setNovoTitulo] = useState<string>('')
   const [novoPai, setNovoPai] = useState<string>('')
 
-  // carrega o markdown quando muda a seção
+  const [modoEdicaoTitulo, setModoEdicaoTitulo] = useState<string | null>(null)
+  const [tituloEditado, setTituloEditado] = useState<string>('')
+
   useEffect(() => {
     const md = conteudo[selecao] || ''
     setMarkdown(md)
@@ -42,7 +42,6 @@ const Admin = () => {
     setPreviewAtivo(false)
   }, [selecao, conteudo])
 
-  // converte PARA HTML de forma síncrona OU assíncrona
   useEffect(() => {
     const parsed = marked.parse(markdown)
     if (typeof parsed === 'string') {
@@ -52,19 +51,16 @@ const Admin = () => {
     }
   }, [markdown])
 
-  // salva o conteúdo editado
   const handleSalvarConteudo = async () => {
     await atualizarConteudo(selecao, markdown)
     setOriginalMarkdown(markdown)
     alert(`Seção "${nomesDasSecoes[selecao] || selecao}" atualizada com sucesso!`)
   }
 
-  // descarta alterações
   const handleDescartar = () => {
     setMarkdown(originalMarkdown)
   }
 
-  // adiciona nova seção ou subseção
   const handleAdicionarSecao = async () => {
     if (!novaChave.trim() || !novoTitulo.trim()) {
       return alert('Chave e título são obrigatórios.')
@@ -82,12 +78,25 @@ const Admin = () => {
     setNovoPai('')
   }
 
-  // remove uma seção ou subseção
   const handleRemoverSecao = async (chave: string) => {
     if (!confirm('Tem certeza que deseja remover esta seção?')) return
     const novoMenu = menu.filter(item => item.chave !== chave)
     await atualizarMenu(novoMenu)
     if (selecao === chave) setSelecao('home')
+  }
+
+  const handleEditarTitulo = (item: MenuItem) => {
+    setModoEdicaoTitulo(item.chave)
+    setTituloEditado(item.titulo)
+  }
+
+  const handleSalvarEdicaoTitulo = async (chave: string) => {
+    const novoMenu = menu.map(item =>
+      item.chave === chave ? { ...item, titulo: tituloEditado } : item
+    )
+    await atualizarMenu(novoMenu)
+    setModoEdicaoTitulo(null)
+    setTituloEditado('')
   }
 
   const houveMudanca = markdown !== originalMarkdown
@@ -97,7 +106,6 @@ const Admin = () => {
       <AdminSidebar selecao={selecao} onSelect={setSelecao} />
 
       <main className="flex-1 p-8 space-y-6 overflow-y-auto">
-        {/* === Editor de Conteúdo (em cima) === */}
         <section className="bg-white p-6 rounded shadow">
           <header className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-blue-700">
@@ -106,17 +114,13 @@ const Admin = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setPreviewAtivo(false)}
-                className={`px-4 py-2 rounded ${
-                  !previewAtivo ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
+                className={`px-4 py-2 rounded ${!previewAtivo ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
               >
                 Editor
               </button>
               <button
                 onClick={() => setPreviewAtivo(true)}
-                className={`px-4 py-2 rounded ${
-                  previewAtivo ? 'bg-blue-600 text-white' : 'bg-gray-200'
-                }`}
+                className={`px-4 py-2 rounded ${previewAtivo ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
               >
                 Preview
               </button>
@@ -158,7 +162,6 @@ const Admin = () => {
           </div>
         </section>
 
-        {/* === Gerenciar Seções (embaixo) === */}
         <section className="bg-gray-100 p-4 rounded">
           <h2 className="text-lg font-semibold mb-3">Gerenciar Seções</h2>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -194,20 +197,101 @@ const Admin = () => {
             </button>
           </div>
           <ul className="divide-y">
-            {menu.map(item => (
-              <li
-                key={item.chave}
-                className="flex justify-between items-center py-1"
-              >
-                <span>{item.pai ? `— ${item.titulo}` : item.titulo}</span>
-                <button
-                  onClick={() => handleRemoverSecao(item.chave)}
-                  className="text-red-600 hover:underline text-sm"
-                >
-                  Remover
-                </button>
-              </li>
-            ))}
+            {menu
+              .filter(item => !item.pai)
+              .map(pai => (
+                <div key={pai.chave}>
+                  <li className="flex justify-between items-center py-1 gap-2">
+                    {modoEdicaoTitulo === pai.chave ? (
+                      <>
+                        <input
+                          value={tituloEditado}
+                          onChange={(e) => setTituloEditado(e.target.value)}
+                          className="border px-2 py-1 rounded w-full"
+                        />
+                        <button
+                          onClick={() => handleSalvarEdicaoTitulo(pai.chave)}
+                          className="text-green-600 hover:underline text-sm"
+                        >
+                          Salvar
+                        </button>
+                        <button
+                          onClick={() => setModoEdicaoTitulo(null)}
+                          className="text-gray-500 text-sm"
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span>{pai.titulo}</span>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleEditarTitulo(pai)}
+                            className="text-blue-600 hover:underline text-sm"
+                          >
+                            Editar título
+                          </button>
+                          <button
+                            onClick={() => handleRemoverSecao(pai.chave)}
+                            className="text-red-600 hover:underline text-sm"
+                          >
+                            Remover
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </li>
+                  {menu
+                    .filter(filho => filho.pai === pai.chave)
+                    .map(filho => (
+                      <li
+                        key={filho.chave}
+                        className="flex justify-between items-center py-1 gap-2 pl-6"
+                      >
+                        {modoEdicaoTitulo === filho.chave ? (
+                          <>
+                            <input
+                              value={tituloEditado}
+                              onChange={(e) => setTituloEditado(e.target.value)}
+                              className="border px-2 py-1 rounded w-full"
+                            />
+                            <button
+                              onClick={() => handleSalvarEdicaoTitulo(filho.chave)}
+                              className="text-green-600 hover:underline text-sm"
+                            >
+                              Salvar
+                            </button>
+                            <button
+                              onClick={() => setModoEdicaoTitulo(null)}
+                              className="text-gray-500 text-sm"
+                            >
+                              Cancelar
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span>— {filho.titulo}</span>
+                            <div className="flex gap-3">
+                              <button
+                                onClick={() => handleEditarTitulo(filho)}
+                                className="text-blue-600 hover:underline text-sm"
+                              >
+                                Editar título
+                              </button>
+                              <button
+                                onClick={() => handleRemoverSecao(filho.chave)}
+                                className="text-red-600 hover:underline text-sm"
+                              >
+                                Remover
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </li>
+                    ))}
+                </div>
+              ))}
           </ul>
         </section>
       </main>

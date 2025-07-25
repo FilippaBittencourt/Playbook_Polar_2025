@@ -13,9 +13,11 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
   const [bodyHtml, setBodyHtml] = useState<string>('')
 
   useEffect(() => {
+    // Rola para o topo ao trocar de seção
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+
     const rawMd =
-      conteudo[topic] ??
-      `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
+      conteudo[topic] ?? `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
 
     // Remove o primeiro título (geralmente "# topic")
     const mdWithoutFirstTitle = rawMd.replace(/^#\s+.*\n?/, '')

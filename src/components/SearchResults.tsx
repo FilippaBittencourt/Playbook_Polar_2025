@@ -8,6 +8,10 @@ interface SearchResultsProps {
   handleTopicSelect: (topic: string) => void;
 }
 
+// Remove marcações HTML básicas (tags)
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]+>/g, "");
+
 // Remove marcações Markdown básicas
 const stripMarkdown = (md: string) =>
   md
@@ -81,8 +85,9 @@ const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProp
       ) : (
         <div className="space-y-6">
           {results.map((item, idx) => {
-            // limpa Markdown e remove eventual título na primeira linha
-            const plain = stripMarkdown(item.raw);
+            // primeiro remove HTML, depois limpa Markdown e remove eventual título na primeira linha
+            const noHtml = stripHtml(item.raw);
+            const plain = stripMarkdown(noHtml);
             const lines = plain
               .split(/\r?\n/)
               .map(l => l.trim())
