@@ -68,6 +68,12 @@ const Admin = () => {
     if (menu.some(item => item.chave === novaChave)) {
       return alert('Já existe uma seção com essa chave.')
     }
+
+    const paiSelecionado = menu.find(item => item.chave === novoPai)
+    if (paiSelecionado?.pai) {
+      return alert('Não é permitido criar uma subseção dentro de outra subseção.')
+    }
+
     const novoMenu: MenuItem[] = [
       ...menu,
       { chave: novaChave, titulo: novoTitulo, pai: novoPai || undefined },
@@ -97,6 +103,18 @@ const Admin = () => {
     await atualizarMenu(novoMenu)
     setModoEdicaoTitulo(null)
     setTituloEditado('')
+  }
+
+  const handleMover = async (chave: string, direcao: 'cima' | 'baixo') => {
+    const index = menu.findIndex(item => item.chave === chave)
+    if (index === -1) return
+    const novoMenu = [...menu]
+    const novoIndex = direcao === 'cima' ? index - 1 : index + 1
+    if (novoIndex < 0 || novoIndex >= menu.length) return
+    const temp = novoMenu[index]
+    novoMenu[index] = novoMenu[novoIndex]
+    novoMenu[novoIndex] = temp
+    await atualizarMenu(novoMenu)
   }
 
   const houveMudanca = markdown !== originalMarkdown
@@ -199,7 +217,7 @@ const Admin = () => {
           <ul className="divide-y">
             {menu
               .filter(item => !item.pai)
-              .map(pai => (
+              .map((pai) => (
                 <div key={pai.chave}>
                   <li className="flex justify-between items-center py-1 gap-2">
                     {modoEdicaoTitulo === pai.chave ? (
@@ -209,46 +227,25 @@ const Admin = () => {
                           onChange={(e) => setTituloEditado(e.target.value)}
                           className="border px-2 py-1 rounded w-full"
                         />
-                        <button
-                          onClick={() => handleSalvarEdicaoTitulo(pai.chave)}
-                          className="text-green-600 hover:underline text-sm"
-                        >
-                          Salvar
-                        </button>
-                        <button
-                          onClick={() => setModoEdicaoTitulo(null)}
-                          className="text-gray-500 text-sm"
-                        >
-                          Cancelar
-                        </button>
+                        <button onClick={() => handleSalvarEdicaoTitulo(pai.chave)} className="text-green-600 text-sm">Salvar</button>
+                        <button onClick={() => setModoEdicaoTitulo(null)} className="text-gray-500 text-sm">Cancelar</button>
                       </>
                     ) : (
                       <>
                         <span>{pai.titulo}</span>
                         <div className="flex gap-3">
-                          <button
-                            onClick={() => handleEditarTitulo(pai)}
-                            className="text-blue-600 hover:underline text-sm"
-                          >
-                            Editar título
-                          </button>
-                          <button
-                            onClick={() => handleRemoverSecao(pai.chave)}
-                            className="text-red-600 hover:underline text-sm"
-                          >
-                            Remover
-                          </button>
+                          <button onClick={() => handleMover(pai.chave, 'cima')} className="text-gray-500 text-sm">↑</button>
+                          <button onClick={() => handleMover(pai.chave, 'baixo')} className="text-gray-500 text-sm">↓</button>
+                          <button onClick={() => handleEditarTitulo(pai)} className="text-blue-600 hover:underline text-sm">Editar título</button>
+                          <button onClick={() => handleRemoverSecao(pai.chave)} className="text-red-600 hover:underline text-sm">Remover</button>
                         </div>
                       </>
                     )}
                   </li>
                   {menu
                     .filter(filho => filho.pai === pai.chave)
-                    .map(filho => (
-                      <li
-                        key={filho.chave}
-                        className="flex justify-between items-center py-1 gap-2 pl-6"
-                      >
+                    .map((filho) => (
+                      <li key={filho.chave} className="flex justify-between items-center py-1 gap-2 pl-6">
                         {modoEdicaoTitulo === filho.chave ? (
                           <>
                             <input
@@ -256,35 +253,17 @@ const Admin = () => {
                               onChange={(e) => setTituloEditado(e.target.value)}
                               className="border px-2 py-1 rounded w-full"
                             />
-                            <button
-                              onClick={() => handleSalvarEdicaoTitulo(filho.chave)}
-                              className="text-green-600 hover:underline text-sm"
-                            >
-                              Salvar
-                            </button>
-                            <button
-                              onClick={() => setModoEdicaoTitulo(null)}
-                              className="text-gray-500 text-sm"
-                            >
-                              Cancelar
-                            </button>
+                            <button onClick={() => handleSalvarEdicaoTitulo(filho.chave)} className="text-green-600 text-sm">Salvar</button>
+                            <button onClick={() => setModoEdicaoTitulo(null)} className="text-gray-500 text-sm">Cancelar</button>
                           </>
                         ) : (
                           <>
                             <span>— {filho.titulo}</span>
                             <div className="flex gap-3">
-                              <button
-                                onClick={() => handleEditarTitulo(filho)}
-                                className="text-blue-600 hover:underline text-sm"
-                              >
-                                Editar título
-                              </button>
-                              <button
-                                onClick={() => handleRemoverSecao(filho.chave)}
-                                className="text-red-600 hover:underline text-sm"
-                              >
-                                Remover
-                              </button>
+                              <button onClick={() => handleMover(filho.chave, 'cima')} className="text-gray-500 text-sm">↑</button>
+                              <button onClick={() => handleMover(filho.chave, 'baixo')} className="text-gray-500 text-sm">↓</button>
+                              <button onClick={() => handleEditarTitulo(filho)} className="text-blue-600 hover:underline text-sm">Editar título</button>
+                              <button onClick={() => handleRemoverSecao(filho.chave)} className="text-red-600 hover:underline text-sm">Remover</button>
                             </div>
                           </>
                         )}
