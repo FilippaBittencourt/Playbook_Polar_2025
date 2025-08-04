@@ -69,5 +69,45 @@
     "chave": "Fases",
     "titulo": "Fases",
     "pai": "vendas"
+  },
+  {
+    "chave": "Prospecção",
+    "titulo": "Prospecção",
+    "pai": "vendas"
+  },
+  {
+    "chave": "abordagemconsultiva",
+    "titulo": "Abordagem consultiva",
+    "pai": "vendas"
+  },
+  {
+    "chave": "metodologiaspolar",
+    "titulo": "Metodologias",
+    "pai": "vendas"
+  },
+  {
+    "chave": "matrizdevisitas",
+    "titulo": "Matriz de visitas",
+    "pai": "vendas"
+  },
+  {
+    "chave": "teste",
+    "titulo": "teste",
+    "pai": "Prospecção"
+  },
+  {
+    "chave": "posvenda",
+    "titulo": "Pós-venda",
+    "pai": "vendas"
+  },
+  {
+    "chave": "planorecuperacao",
+    "titulo": "Plano de Recuperação",
+    "pai": "indicadores"
+  },
+  {
+    "chave": "metasvendas",
+    "titulo": "Metas de vendas",
+    "pai": "indicadores"
   }
 ]
