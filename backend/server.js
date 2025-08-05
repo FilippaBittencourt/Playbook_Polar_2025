@@ -52,5 +52,5 @@ app.post('/logout', (req, res) => {
 
 // INICIA O SERVIDOR
 app.listen(PORT, () => {
-  console.log(`🔐 Backend rodando em http://localhost:${PORT}`);
+  console.log(`🔐 Backend rodando no Railway! :)`);
 });
