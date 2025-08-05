@@ -8,7 +8,10 @@ const app = express();
 const PORT = 3001;
 
 app.use(cors({
-  origin: 'http://localhost:8080', // endereço do seu Vite
+  origin: [
+    'http://localhost:8080', // ainda permite desenvolvimento local
+    'https://playbook-polar.vercel.app' // URL do seu frontend em produção
+  ],
   credentials: true
 }));
 app.use(bodyParser.json());
