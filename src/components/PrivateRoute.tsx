@@ -1,45 +1,52 @@
 // src/components/PrivateRoute.tsx
-import React, { useEffect, useState, ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext'; // use se estiver usando AuthContext
 
 interface PrivateRouteProps {
-  children: ReactNode
-  adminOnly?: boolean
+  children: ReactNode;
+  adminOnly?: boolean;
 }
 
+const API_URL = 'https://backend-playbook-production.up.railway.app';
+
 const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
-  const navigate = useNavigate()
-  const [loading, setLoading] = useState(true)
-  const [authenticated, setAuthenticated] = useState<boolean | null>(null)
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const { setUsuario } = useAuth(); // opcional: usar contexto para guardar o usuário
 
   useEffect(() => {
     const verify = async () => {
       try {
-        const res = await fetch('/api/verificar-autenticacao', {
+        const res = await fetch(`${API_URL}/verificar-autenticacao`, {
           credentials: 'include',
-        })
-        const data = await res.json()
+        });
+
+        const data = await res.json();
+        console.log("Route")
+        console.log(data)
+
         if (data.autenticado) {
-          // se rota for adminOnly e não for admin, redireciona
+          setUsuario(data.usuario); // armazenar no contexto se quiser
+
           if (adminOnly && data.usuario !== 'admin') {
-            navigate('/home', { replace: true })
+            navigate('/home', { replace: true });
           } else {
-            setAuthenticated(true)
+            setLoading(false);
           }
         } else {
-          navigate('/login', { replace: true })
+          navigate('/login', { replace: true });
         }
-      } catch {
-        navigate('/login', { replace: true })
-      } finally {
-        setLoading(false)
+      } catch (error) {
+        console.error('Erro ao verificar autenticação:', error);
+        navigate('/login', { replace: true });
       }
-    }
+    };
 
-    verify()
-  }, [navigate, adminOnly])
+    verify();
+  }, [navigate, adminOnly, setUsuario]);
 
-  if (loading || authenticated === null) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
         <div className="flex flex-col items-center">
@@ -47,10 +54,10 @@ const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
           <p className="text-gray-600 text-lg font-medium">Verificando autenticação...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default PrivateRoute
+export default PrivateRoute;

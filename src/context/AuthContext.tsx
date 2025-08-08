@@ -1,18 +1,33 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const AuthContext = createContext<any>(null);
+const API_BASE = 'https://backend-playbook-production.up.railway.app';
 
-export const AuthProvider = ({ children }: any) => {
+type AuthContextType = {
+  usuario: string | null;
+  setUsuario: (usuario: string | null) => void;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [usuario, setUsuario] = useState<string | null>(null);
 
   const verificarLogin = async () => {
-    const resp = await fetch('/api/verificar-autenticacao', {
-        credentials: 'include'
-    });
+    try {
+      const resp = await fetch(`${API_BASE}/verificar-autenticacao`, {
+        credentials: 'include',
+      });
 
-    const dados = await resp.json();
-    if (dados.autenticado) {
-      setUsuario(dados.usuario);
+      const dados = await resp.json();
+
+      if (dados.autenticado) {
+        setUsuario(dados.usuario);
+      } else {
+        setUsuario(null);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar autenticação:', error);
+      setUsuario(null);
     }
   };
 
@@ -27,4 +42,10 @@ export const AuthProvider = ({ children }: any) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de AuthProvider');
+  }
+  return context;
+};

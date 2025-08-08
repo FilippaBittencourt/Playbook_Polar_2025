@@ -26,6 +26,8 @@ const ConteudoContext = createContext<ConteudoContextType | undefined>(
   undefined
 );
 
+const API_BASE = 'https://backend-playbook-production.up.railway.app';
+
 export const ConteudoProvider = ({ children }: { children: ReactNode }) => {
   const [conteudo, setConteudo] = useState<Conteudo>({});
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -33,43 +35,52 @@ export const ConteudoProvider = ({ children }: { children: ReactNode }) => {
   // carregar conteúdo e menu na montagem
   useEffect(() => {
     async function fetchData() {
-      const [cRes, mRes] = await Promise.all([
-        fetch('/api/conteudo'),
-        fetch('/api/menu'),
-      ]);
-      if (cRes.ok && mRes.ok) {
-        setConteudo(await cRes.json());
-        setMenu(await mRes.json());
-      } else {
-        console.error('Falha ao carregar dados iniciais');
+      try {
+        const res = await fetch(`${API_BASE}/conteudos`);
+        if (!res.ok) throw new Error('Erro ao buscar conteúdos');
+        const data = await res.json();
+
+        // Converter array de objetos em um objeto chave-valor
+        const conteudoMap: Conteudo = {};
+        data.forEach((item: { chave: string; valor: string }) => {
+          conteudoMap[item.chave] = item.valor;
+        });
+        setConteudo(conteudoMap);
+
+        // MOCK de menu, ajuste aqui ou integre com backend futuramente
+        setMenu([
+          { chave: 'home', titulo: 'Home' },
+          { chave: 'sobre', titulo: 'Sobre' },
+          { chave: 'institucional', titulo: 'Institucional', pai: 'sobre' },
+        ]);
+      } catch (error) {
+        console.error('Erro ao carregar dados iniciais:', error);
       }
     }
     fetchData();
   }, []);
 
-  // salva no backend e atualiza local
-  const atualizarConteudo = async (
-    secao: string,
-    novoMarkdown: string
-  ) => {
+  // atualiza backend e local
+  const atualizarConteudo = async (secao: string, novoMarkdown: string) => {
     const updated = { ...conteudo, [secao]: novoMarkdown };
-    const res = await fetch('/api/conteudo', {
-      method: 'POST',
+
+    const res = await fetch(`${API_BASE}/conteudo/${encodeURIComponent(secao)}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updated),
+      body: JSON.stringify({ valor: novoMarkdown }),
     });
-    if (res.ok) setConteudo(updated);
-    else console.error('Erro ao salvar conteúdo');
+
+    if (res.ok) {
+      setConteudo(updated);
+    } else {
+      console.error('Erro ao salvar conteúdo');
+    }
   };
 
+  // menu local por enquanto (você pode substituir essa função futuramente)
   const atualizarMenu = async (novoMenu: MenuItem[]) => {
-    const res = await fetch('/api/menu', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(novoMenu),
-    });
-    if (res.ok) setMenu(novoMenu);
-    else console.error('Erro ao salvar menu');
+    setMenu(novoMenu);
+    console.warn('🔧 Menu atualizado localmente. Adicione suporte no backend se necessário.');
   };
 
   return (

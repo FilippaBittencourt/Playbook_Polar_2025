@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext'; // 👈 import do contexto
+
+const API_URL = 'https://backend-playbook-production.up.railway.app';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -11,16 +14,19 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [verificando, setVerificando] = useState(true);
+
   const navigate = useNavigate();
+  const { setUsuario } = useAuth(); // 👈 hook do contexto
 
   useEffect(() => {
     const verificarLogin = async () => {
       try {
-        const res = await fetch('/api/verificar-autenticacao', {
+        const res = await fetch(`${API_URL}/verificar-autenticacao`, {
           credentials: 'include',
         });
         const data = await res.json();
         if (data.autenticado) {
+          setUsuario(data.usuario); // 👈 atualiza contexto
           if (data.usuario === 'admin') {
             navigate('/admin');
           } else {
@@ -34,7 +40,7 @@ const Login = () => {
       }
     };
     verificarLogin();
-  }, [navigate]);
+  }, [navigate, setUsuario]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +48,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -51,14 +57,15 @@ const Login = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.sucesso) {
+      if (data.sucesso) {
+        setUsuario(username); // 👈 atualiza contexto com o login informado
         if (username === 'admin') {
           navigate('/admin');
         } else {
           navigate('/home');
         }
       } else {
-        setError(data.mensagem || 'Usuário ou senha inválidos');
+        setError(data.mensagem || 'Usuário ou senha inválidos.');
       }
     } catch (err) {
       console.error(err);

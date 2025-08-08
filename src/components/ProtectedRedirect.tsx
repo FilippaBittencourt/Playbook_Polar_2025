@@ -2,6 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Substitua pela URL real do backend em produção (com HTTPS)
+const API_URL = 'https://backend-playbook-production.up.railway.app';
+
 const ProtectedRedirect = () => {
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(true);
@@ -9,7 +12,7 @@ const ProtectedRedirect = () => {
   useEffect(() => {
     const verificarAutenticacao = async () => {
       try {
-        const res = await fetch('/api/verificar-autenticacao', {
+        const res = await fetch(`${API_URL}/verificar-autenticacao`, {
           credentials: 'include',
         });
         const data = await res.json();
@@ -20,6 +23,7 @@ const ProtectedRedirect = () => {
           navigate('/login', { replace: true });
         }
       } catch (err) {
+        console.error('Erro ao verificar autenticação:', err);
         navigate('/login', { replace: true });
       } finally {
         setCarregando(false);
