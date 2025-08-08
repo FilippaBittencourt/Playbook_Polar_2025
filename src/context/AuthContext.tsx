@@ -1,32 +1,32 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-const API_BASE = 'https://backend-playbook-production.up.railway.app';
-
 type AuthContextType = {
-  usuario: string | null;
+  usuario: string | null; // 'admin', 'user' ou null
   setUsuario: (usuario: string | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const CHAVE_USER = '57jFx><36#8I';
+const CHAVE_ADMIN = 'z2d|MO7.QW2]';
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return decodeURIComponent(match[2]);
+  return null;
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [usuario, setUsuario] = useState<string | null>(null);
 
-  const verificarLogin = async () => {
-    try {
-      const resp = await fetch(`${API_BASE}/verificar-autenticacao`, {
-        credentials: 'include',
-      });
+  const verificarLogin = () => {
+    const valorCookie = getCookie('chaveSecreta');
 
-      const dados = await resp.json();
-
-      if (dados.autenticado) {
-        setUsuario(dados.usuario);
-      } else {
-        setUsuario(null);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar autenticação:', error);
+    if (valorCookie === CHAVE_ADMIN) {
+      setUsuario('admin');
+    } else if (valorCookie === CHAVE_USER) {
+      setUsuario('user');
+    } else {
       setUsuario(null);
     }
   };

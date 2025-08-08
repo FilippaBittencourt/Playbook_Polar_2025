@@ -1,49 +1,52 @@
-// src/components/PrivateRoute.tsx
 import React, { useEffect, useState, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext'; // use se estiver usando AuthContext
+import { useAuth } from '@/context/AuthContext';
 
 interface PrivateRouteProps {
   children: ReactNode;
   adminOnly?: boolean;
 }
 
-const API_URL = 'https://backend-playbook-production.up.railway.app';
+const CHAVE_USER = '57jFx><36#8I';
+const CHAVE_ADMIN = 'z2d|MO7.QW2]';
+
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  if (match) return decodeURIComponent(match[2]);
+  return null;
+}
 
 const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const { setUsuario } = useAuth(); // opcional: usar contexto para guardar o usuário
+  const { setUsuario } = useAuth();
 
   useEffect(() => {
-    const verify = async () => {
-      try {
-        const res = await fetch(`${API_URL}/verificar-autenticacao`, {
-          credentials: 'include',
-        });
+    const verificarAutenticacao = () => {
+      const valorCookie = getCookie('chaveSecreta');
 
-        const data = await res.json();
-        console.log("Route")
-        console.log(data)
-
-        if (data.autenticado) {
-          setUsuario(data.usuario); // armazenar no contexto se quiser
-
-          if (adminOnly && data.usuario !== 'admin') {
-            navigate('/home', { replace: true });
-          } else {
-            setLoading(false);
-          }
+      if (valorCookie === CHAVE_ADMIN) {
+        if (adminOnly) {
+          setUsuario('admin');
+          setLoading(false);
         } else {
-          navigate('/login', { replace: true });
+          setUsuario('admin');
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Erro ao verificar autenticação:', error);
+      } else if (valorCookie === CHAVE_USER) {
+        if (adminOnly) {
+          // usuário normal não pode acessar área admin
+          navigate('/home', { replace: true });
+          return;
+        }
+        setUsuario('user');
+        setLoading(false);
+      } else {
         navigate('/login', { replace: true });
       }
     };
 
-    verify();
+    verificarAutenticacao();
   }, [navigate, adminOnly, setUsuario]);
 
   if (loading) {

@@ -4,9 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/context/AuthContext'; // 👈 import do contexto
+import { useAuth } from '@/context/AuthContext';
 
 const API_URL = 'https://backend-playbook-production.up.railway.app';
+
+const CHAVE_USER = '57jFx><36#8I';
+const CHAVE_ADMIN = 'z2d|MO7.QW2]';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -16,28 +19,21 @@ const Login = () => {
   const [verificando, setVerificando] = useState(true);
 
   const navigate = useNavigate();
-  const { setUsuario } = useAuth(); // 👈 hook do contexto
+  const { setUsuario } = useAuth();
 
   useEffect(() => {
-    const verificarLogin = async () => {
-      try {
-        const res = await fetch(`${API_URL}/verificar-autenticacao`, {
-          credentials: 'include',
-        });
-        const data = await res.json();
-        if (data.autenticado) {
-          setUsuario(data.usuario); // 👈 atualiza contexto
-          if (data.usuario === 'admin') {
-            navigate('/admin');
-          } else {
-            navigate('/home');
-          }
+    // agora a verificação pode ser só por cookie (se quiser)
+    const verificarLogin = () => {
+      const match = document.cookie.match(/(^| )chaveSecreta=([^;]+)/);
+      if (match) {
+        setUsuario(username);
+        if (match[2] === CHAVE_ADMIN) {
+          navigate('/admin');
+        } else {
+          navigate('/home');
         }
-      } catch (err) {
-        console.error('Erro ao verificar autenticação:', err);
-      } finally {
-        setVerificando(false);
       }
+      setVerificando(false);
     };
     verificarLogin();
   }, [navigate, setUsuario]);
@@ -58,12 +54,17 @@ const Login = () => {
       const data = await response.json();
 
       if (data.sucesso) {
-        setUsuario(username); // 👈 atualiza contexto com o login informado
+        setUsuario(username);
+
+        // Define chave secreta conforme o tipo de usuário
         if (username === 'admin') {
+          document.cookie = `chaveSecreta=${encodeURIComponent(CHAVE_ADMIN)}; path=/; secure; samesite=strict; max-age=${60 * 60 * 24 * 7}`;
           navigate('/admin');
         } else {
+          document.cookie = `chaveSecreta=${encodeURIComponent(CHAVE_USER)}; path=/; secure; samesite=strict; max-age=${60 * 60 * 24 * 7}`;
           navigate('/home');
         }
+
       } else {
         setError(data.mensagem || 'Usuário ou senha inválidos.');
       }

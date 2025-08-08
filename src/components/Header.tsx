@@ -15,9 +15,12 @@ const Header = ({ onMenuToggle, query, setQuery }: HeaderProps) => {
     }
   };
 
-  const handleLogout = async () => {
-    // ✅ Altere apenas esta parte para usar a rota intermediária com tela visual
-    window.location.href = "/logout";
+  const handleLogout = () => {
+    // Remove o cookie 'chaveSecreta' definindo expiração no passado
+    document.cookie = 'chaveSecreta=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  
+    // Opcional: atualizar o estado ou redirecionar para login
+    window.location.href = '/login'; // redireciona para login após logout
   };
 
   return (
