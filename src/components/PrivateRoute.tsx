@@ -1,11 +1,6 @@
-import React, { useEffect, useState, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-
-interface PrivateRouteProps {
-  children: ReactNode;
-  adminOnly?: boolean;
-}
+// src/components/PrivateRoute.tsx
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 
 const CHAVE_USER = '57jFx><36#8I';
 const CHAVE_ADMIN = 'z2d|MO7.QW2]';
@@ -16,46 +11,28 @@ function getCookie(name: string): string | null {
   return null;
 }
 
-const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const { setUsuario } = useAuth();
+interface PrivateRouteProps {
+  children: React.ReactNode;
+  adminOnly?: boolean;
+}
 
-  useEffect(() => {
-    const verificarAutenticacao = () => {
-      const valorCookie = getCookie('chaveSecreta');
-  
-      if (valorCookie === CHAVE_ADMIN) {
-        // admin pode acessar qualquer rota
-        setUsuario('admin');
-        setLoading(false);
-      } else if (valorCookie === CHAVE_USER) {
-        if (adminOnly) {
-          // usuário normal não pode acessar área admin
-          navigate('/home', { replace: true });
-        } else {
-          setUsuario('user');
-          setLoading(false);
-        }
-      } else {
-        navigate('/login', { replace: true });
-      }
-    };
-  
-    verificarAutenticacao();
-  }, [navigate, adminOnly, setUsuario]);
-  
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-white">
-        <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600 border-solid mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Verificando autenticação...</p>
-        </div>
-      </div>
-    );
+const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
+  const valorCookie = getCookie('chaveSecreta');
+
+  const isAuthenticated = valorCookie === CHAVE_USER || valorCookie === CHAVE_ADMIN;
+  const isAdmin = valorCookie === CHAVE_ADMIN;
+
+  if (!isAuthenticated) {
+    // Usuário não autenticado: redireciona para login
+    return <Navigate to="/login" replace />;
   }
 
+  if (adminOnly && !isAdmin) {
+    // Usuário não é admin e rota é adminOnly: redireciona para home ou login
+    return <Navigate to="/home" replace />;
+  }
+
+  // Se chegou aqui, tem acesso liberado
   return <>{children}</>;
 };
 

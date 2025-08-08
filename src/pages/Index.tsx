@@ -15,7 +15,7 @@ const formatarTitulo = (chave: string) => {
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedTopic, setSelectedTopic] = useState("home");
+  const [selectedTopic, setSelectedTopic] = useState("Home");
   const [query, setQuery] = useState("");
 
   const handleTopicSelect = (topic: string) => {
