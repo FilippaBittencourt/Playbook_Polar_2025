@@ -24,31 +24,27 @@ const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
   useEffect(() => {
     const verificarAutenticacao = () => {
       const valorCookie = getCookie('chaveSecreta');
-
+  
       if (valorCookie === CHAVE_ADMIN) {
-        if (adminOnly) {
-          setUsuario('admin');
-          setLoading(false);
-        } else {
-          setUsuario('admin');
-          setLoading(false);
-        }
+        // admin pode acessar qualquer rota
+        setUsuario('admin');
+        setLoading(false);
       } else if (valorCookie === CHAVE_USER) {
         if (adminOnly) {
           // usuário normal não pode acessar área admin
           navigate('/home', { replace: true });
-          return;
+        } else {
+          setUsuario('user');
+          setLoading(false);
         }
-        setUsuario('user');
-        setLoading(false);
       } else {
         navigate('/login', { replace: true });
       }
     };
-
+  
     verificarAutenticacao();
   }, [navigate, adminOnly, setUsuario]);
-
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-white">
