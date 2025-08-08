@@ -20,21 +20,16 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
       conteudo[topic]?.valor ??
       `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
 
-    // Remove o primeiro título (geralmente "# topic")
-    const mdWithoutFirstTitle = rawMd.replace(/^#\s+.*\n?/, '')
-
-    // Encontra o próximo título (##, ### etc.) e extrai
-    const nextTitleMatch = mdWithoutFirstTitle.match(/^#{1,6}\s+(.*)/m)
-    const extractedTitle = nextTitleMatch ? nextTitleMatch[1].trim() : ''
+    // Extrai o primeiro título (linha que começa com # )
+    const firstTitleMatch = rawMd.match(/^#\s+(.*)/)
+    const extractedTitle = firstTitleMatch ? firstTitleMatch[1].trim() : topic
     setTitle(extractedTitle)
 
-    // Remove o próximo título também do conteúdo
-    const mdWithoutDuplicateTitle = nextTitleMatch
-      ? mdWithoutFirstTitle.replace(nextTitleMatch[0], '').trim()
-      : mdWithoutFirstTitle
+    // Remove o primeiro título do markdown para o corpo
+    const mdWithoutFirstTitle = rawMd.replace(/^#\s+.*\n?/, '').trim()
 
     // Converte o restante para HTML
-    const html = marked.parse(mdWithoutDuplicateTitle, { async: false })
+    const html = marked.parse(mdWithoutFirstTitle, { async: false })
     setBodyHtml(html)
   }, [topic, conteudo])
 
