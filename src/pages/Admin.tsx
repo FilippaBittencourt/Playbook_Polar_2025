@@ -1,6 +1,6 @@
 // src/pages/Admin.tsx
 import { useState, useEffect } from 'react'
-import { useConteudo, MenuItem } from '@/context/ConteudoContext'
+import { useConteudo, ConteudoItem } from '@/context/ConteudoContext'
 import { marked } from 'marked'
 import AdminSidebar from '@/components/AdminSidebar'
 
@@ -19,29 +19,35 @@ const nomesDasSecoes: Record<string, string> = {
   politicas: "Política comercial",
 }
 
+const formatarTitulo = (chave: string) =>
+  nomesDasSecoes[chave] || chave.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+
 const Admin = () => {
-  const { conteudo, atualizarConteudo, menu, atualizarMenu } = useConteudo()
+  const { conteudo, atualizarConteudo, deletarConteudo } = useConteudo()
 
   const [selecao, setSelecao] = useState<string>('home')
   const [markdown, setMarkdown] = useState<string>('')
   const [originalMarkdown, setOriginalMarkdown] = useState<string>('')
+
   const [previewAtivo, setPreviewAtivo] = useState<boolean>(false)
   const [previewHTML, setPreviewHTML] = useState<string>('')
 
   const [novaChave, setNovaChave] = useState<string>('')
-  const [novoTitulo, setNovoTitulo] = useState<string>('')
   const [novoPai, setNovoPai] = useState<string>('')
 
   const [modoEdicaoTitulo, setModoEdicaoTitulo] = useState<string | null>(null)
   const [tituloEditado, setTituloEditado] = useState<string>('')
 
+  // Carregar conteúdo da seleção atual
   useEffect(() => {
-    const md = conteudo[selecao] || ''
+    const item = conteudo[selecao]
+    const md = item?.valor || ''
     setMarkdown(md)
     setOriginalMarkdown(md)
     setPreviewAtivo(false)
   }, [selecao, conteudo])
 
+  // Atualizar preview HTML
   useEffect(() => {
     const parsed = marked.parse(markdown)
     if (typeof parsed === 'string') {
@@ -51,10 +57,12 @@ const Admin = () => {
     }
   }, [markdown])
 
+  const menu = Object.values(conteudo)
+
   const handleSalvarConteudo = async () => {
-    await atualizarConteudo(selecao, markdown)
+    await atualizarConteudo(selecao, markdown, conteudo[selecao]?.pai || undefined)
     setOriginalMarkdown(markdown)
-    alert(`Seção "${nomesDasSecoes[selecao] || selecao}" atualizada com sucesso!`)
+    alert(`Seção "${formatarTitulo(selecao)}" atualizada com sucesso!`)
   }
 
   const handleDescartar = () => {
@@ -62,72 +70,52 @@ const Admin = () => {
   }
 
   const handleAdicionarSecao = async () => {
-    if (!novaChave.trim() || !novoTitulo.trim()) {
-      return alert('Chave e título são obrigatórios.')
-    }
-    if (menu.some(item => item.chave === novaChave)) {
-      return alert('Já existe uma seção com essa chave.')
+    const chave = novaChave.trim()
+    if (!chave) return alert('Chave é obrigatória.')
+
+    if (conteudo[chave]) return alert('Já existe uma seção com essa chave.')
+
+    if (novoPai) {
+      const paiItem = conteudo[novoPai]
+      if (paiItem?.pai) {
+        return alert('Não é permitido criar uma subseção dentro de outra subseção.')
+      }
     }
 
-    const paiSelecionado = menu.find(item => item.chave === novoPai)
-    if (paiSelecionado?.pai) {
-      return alert('Não é permitido criar uma subseção dentro de outra subseção.')
-    }
+    await atualizarConteudo(chave, '', novoPai || undefined)
 
-    const novoMenu: MenuItem[] = [
-      ...menu,
-      { chave: novaChave, titulo: novoTitulo, pai: novoPai || undefined },
-    ]
-    await atualizarMenu(novoMenu)
+    setSelecao(chave)
     setNovaChave('')
-    setNovoTitulo('')
     setNovoPai('')
   }
 
   const handleRemoverSecao = async (chave: string) => {
-    if (!confirm('Tem certeza que deseja remover esta seção?')) return
-    const novoMenu = menu.filter(item => item.chave !== chave)
-    await atualizarMenu(novoMenu)
-    if (selecao === chave) setSelecao('home')
-  }
-
-  const handleEditarTitulo = (item: MenuItem) => {
-    setModoEdicaoTitulo(item.chave)
-    setTituloEditado(item.titulo)
-  }
-
-  const handleSalvarEdicaoTitulo = async (chave: string) => {
-    const novoMenu = menu.map(item =>
-      item.chave === chave ? { ...item, titulo: tituloEditado } : item
-    )
-    await atualizarMenu(novoMenu)
-    setModoEdicaoTitulo(null)
-    setTituloEditado('')
-  }
-
-  const handleMover = async (chave: string, direcao: 'cima' | 'baixo') => {
-    const index = menu.findIndex(item => item.chave === chave)
-    if (index === -1) return
-    const novoMenu = [...menu]
-    const novoIndex = direcao === 'cima' ? index - 1 : index + 1
-    if (novoIndex < 0 || novoIndex >= menu.length) return
-    const temp = novoMenu[index]
-    novoMenu[index] = novoMenu[novoIndex]
-    novoMenu[novoIndex] = temp
-    await atualizarMenu(novoMenu)
+    if (!confirm('Tem certeza que deseja remover esta seção? Isso removerá também as subseções.')) return
+    try {
+      await deletarConteudo(chave)
+      alert('Seção removida com sucesso!')
+    } catch (err) {
+      console.error(err)
+      alert('Erro ao remover seção.')
+    }
   }
 
   const houveMudanca = markdown !== originalMarkdown
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <AdminSidebar selecao={selecao} onSelect={setSelecao} />
+      <AdminSidebar
+        selecao={selecao}
+        onSelect={setSelecao}
+        menu={menu}
+        formatarTitulo={formatarTitulo}
+      />
 
       <main className="flex-1 p-8 space-y-6 overflow-y-auto">
         <section className="bg-white p-6 rounded shadow">
           <header className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-blue-700">
-              Editando: {nomesDasSecoes[selecao] || selecao}
+              Editando: {formatarTitulo(selecao)}
             </h1>
             <div className="flex gap-2">
               <button
@@ -189,23 +177,19 @@ const Admin = () => {
               onChange={e => setNovaChave(e.target.value)}
               className="border px-2 py-1 rounded"
             />
-            <input
-              placeholder="Título (ex: Novo Serviço)"
-              value={novoTitulo}
-              onChange={e => setNovoTitulo(e.target.value)}
-              className="border px-2 py-1 rounded"
-            />
             <select
               value={novoPai}
               onChange={e => setNovoPai(e.target.value)}
               className="border px-2 py-1 rounded"
             >
               <option value="">Sem pai (seção principal)</option>
-              {menu.map(item => (
-                <option key={item.chave} value={item.chave}>
-                  {item.titulo}
-                </option>
-              ))}
+              {menu
+                .filter(item => !item.pai)
+                .map(item => (
+                  <option key={item.chave} value={item.chave}>
+                    {formatarTitulo(item.chave)}
+                  </option>
+                ))}
             </select>
             <button
               onClick={handleAdicionarSecao}
@@ -214,59 +198,39 @@ const Admin = () => {
               Adicionar
             </button>
           </div>
+
           <ul className="divide-y">
             {menu
               .filter(item => !item.pai)
-              .map((pai) => (
+              .map(pai => (
                 <div key={pai.chave}>
                   <li className="flex justify-between items-center py-1 gap-2">
-                    {modoEdicaoTitulo === pai.chave ? (
-                      <>
-                        <input
-                          value={tituloEditado}
-                          onChange={(e) => setTituloEditado(e.target.value)}
-                          className="border px-2 py-1 rounded w-full"
-                        />
-                        <button onClick={() => handleSalvarEdicaoTitulo(pai.chave)} className="text-green-600 text-sm">Salvar</button>
-                        <button onClick={() => setModoEdicaoTitulo(null)} className="text-gray-500 text-sm">Cancelar</button>
-                      </>
-                    ) : (
-                      <>
-                        <span>{pai.titulo}</span>
-                        <div className="flex gap-3">
-                          <button onClick={() => handleMover(pai.chave, 'cima')} className="text-gray-500 text-sm">↑</button>
-                          <button onClick={() => handleMover(pai.chave, 'baixo')} className="text-gray-500 text-sm">↓</button>
-                          <button onClick={() => handleEditarTitulo(pai)} className="text-blue-600 hover:underline text-sm">Editar título</button>
-                          <button onClick={() => handleRemoverSecao(pai.chave)} className="text-red-600 hover:underline text-sm">Remover</button>
-                        </div>
-                      </>
-                    )}
+                    <span>{formatarTitulo(pai.chave)}</span>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleRemoverSecao(pai.chave)}
+                        className="text-red-600 hover:underline text-sm"
+                      >
+                        Remover
+                      </button>
+                    </div>
                   </li>
                   {menu
                     .filter(filho => filho.pai === pai.chave)
-                    .map((filho) => (
-                      <li key={filho.chave} className="flex justify-between items-center py-1 gap-2 pl-6">
-                        {modoEdicaoTitulo === filho.chave ? (
-                          <>
-                            <input
-                              value={tituloEditado}
-                              onChange={(e) => setTituloEditado(e.target.value)}
-                              className="border px-2 py-1 rounded w-full"
-                            />
-                            <button onClick={() => handleSalvarEdicaoTitulo(filho.chave)} className="text-green-600 text-sm">Salvar</button>
-                            <button onClick={() => setModoEdicaoTitulo(null)} className="text-gray-500 text-sm">Cancelar</button>
-                          </>
-                        ) : (
-                          <>
-                            <span>— {filho.titulo}</span>
-                            <div className="flex gap-3">
-                              <button onClick={() => handleMover(filho.chave, 'cima')} className="text-gray-500 text-sm">↑</button>
-                              <button onClick={() => handleMover(filho.chave, 'baixo')} className="text-gray-500 text-sm">↓</button>
-                              <button onClick={() => handleEditarTitulo(filho)} className="text-blue-600 hover:underline text-sm">Editar título</button>
-                              <button onClick={() => handleRemoverSecao(filho.chave)} className="text-red-600 hover:underline text-sm">Remover</button>
-                            </div>
-                          </>
-                        )}
+                    .map(filho => (
+                      <li
+                        key={filho.chave}
+                        className="flex justify-between items-center py-1 gap-2 pl-6"
+                      >
+                        <span>— {formatarTitulo(filho.chave)}</span>
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => handleRemoverSecao(filho.chave)}
+                            className="text-red-600 hover:underline text-sm"
+                          >
+                            Remover
+                          </button>
+                        </div>
                       </li>
                     ))}
                 </div>

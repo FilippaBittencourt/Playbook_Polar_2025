@@ -1,20 +1,26 @@
 // src/components/AdminSidebar.tsx
 import { useState } from 'react';
-import { useConteudo, MenuItem } from '@/context/ConteudoContext';
+
+interface ConteudoItem {
+  chave: string;
+  valor: string;
+  pai?: string | null;
+}
 
 interface SidebarProps {
   selecao: string;
   onSelect: (secao: string) => void;
+  menu: ConteudoItem[];
+  formatarTitulo: (chave: string) => string;
 }
 
-const AdminSidebar = ({ selecao, onSelect }: SidebarProps) => {
+const AdminSidebar = ({ selecao, onSelect, menu, formatarTitulo }: SidebarProps) => {
   const [aberto, setAberto] = useState<string | null>(null);
-  const { menu } = useConteudo();
 
   const toggleGrupo = (chave: string) =>
     setAberto(aberto === chave ? null : chave);
 
-  // seções de raiz (sem pai)
+  // Seções de raiz (sem pai)
   const principais = menu.filter((item) => !item.pai);
 
   return (
@@ -23,14 +29,14 @@ const AdminSidebar = ({ selecao, onSelect }: SidebarProps) => {
       <ul className="space-y-1.5">
         {principais.map((item, idx) => (
           <li key={item.chave}>
-            {/** Se tem filhos, cria grupo */}
+            {/* Se tem filhos, cria grupo */}
             {menu.some((sub) => sub.pai === item.chave) ? (
               <>
                 <button
                   onClick={() => toggleGrupo(item.chave)}
                   className="w-full text-left px-3 py-2.5 font-semibold text-gray-900"
                 >
-                  {idx + 1}. {item.titulo}{' '}
+                  {idx + 1}. {formatarTitulo(item.chave)}{' '}
                   {aberto === item.chave ? '▾' : '▸'}
                 </button>
                 {aberto === item.chave && (
@@ -47,7 +53,7 @@ const AdminSidebar = ({ selecao, onSelect }: SidebarProps) => {
                                 : 'hover:bg-gray-100'
                             }`}
                           >
-                            {idx + 1}.{sidx + 1} {sub.titulo}
+                            {idx + 1}.{sidx + 1} {formatarTitulo(sub.chave)}
                           </button>
                         </li>
                       ))}
@@ -63,7 +69,7 @@ const AdminSidebar = ({ selecao, onSelect }: SidebarProps) => {
                     : 'hover:bg-gray-100'
                 }`}
               >
-                {idx + 1}. {item.titulo}
+                {idx + 1}. {formatarTitulo(item.chave)}
               </button>
             )}
           </li>

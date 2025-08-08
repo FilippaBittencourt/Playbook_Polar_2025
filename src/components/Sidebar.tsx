@@ -1,16 +1,26 @@
 // src/components/Sidebar.tsx
 import { useState } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { useConteudo, MenuItem } from '@/context/ConteudoContext';
+import { useConteudo } from '@/context/ConteudoContext';
+
+interface ConteudoItem {
+  chave: string;
+  valor: string;
+  pai?: string | null;
+}
 
 interface SidebarProps {
   isOpen: boolean;
   handleTopicSelect: (topic: string) => void;
+  formatarTitulo: (chave: string) => string;
 }
 
-const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
+const Sidebar = ({ isOpen, handleTopicSelect, formatarTitulo }: SidebarProps) => {
   const [expanded, setExpanded] = useState<string[]>([]);
-  const { menu } = useConteudo();
+  const { conteudo } = useConteudo();
+
+  // transforma conteudo em array para manipular menu
+  const menu: ConteudoItem[] = Object.values(conteudo);
 
   const toggleGroup = (id: string) => {
     setExpanded(prev =>
@@ -18,12 +28,12 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
     );
   };
 
-  // agrupa pai→filhos
+  // agrupa pai → filhos
   const roots = menu.filter(item => !item.pai);
-  const childrenMap: Record<string, MenuItem[]> = {};
+  const childrenMap: Record<string, ConteudoItem[]> = {};
   menu.forEach(item => {
     if (item.pai) {
-      childrenMap[item.pai] = childrenMap[item.pai] || [];
+      if (!childrenMap[item.pai]) childrenMap[item.pai] = [];
       childrenMap[item.pai].push(item);
     }
   });
@@ -46,9 +56,10 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
                   <button
                     onClick={() => toggleGroup(item.chave)}
                     className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-blue-700 transition-colors"
+                    type="button"
                   >
                     <span className="font-medium">
-                      {idx + 1}. {item.titulo}
+                      {idx + 1}. {formatarTitulo(item.chave)}
                     </span>
                     {expanded.includes(item.chave) ? (
                       <ChevronDown className="h-4 w-4" />
@@ -63,8 +74,9 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
                           <button
                             onClick={() => handleTopicSelect(sub.chave)}
                             className="w-full text-left p-2 pl-4 rounded hover:bg-blue-700/50 text-blue-100 text-sm transition-colors"
+                            type="button"
                           >
-                            {idx + 1}.{subIdx + 1} {sub.titulo}
+                            {idx + 1}.{subIdx + 1} {formatarTitulo(sub.chave)}
                           </button>
                         </li>
                       ))}
@@ -75,9 +87,10 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
                 <button
                   onClick={() => handleTopicSelect(item.chave)}
                   className="w-full text-left p-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  type="button"
                 >
                   <span className="font-medium">
-                    {idx + 1}. {item.titulo}
+                    {idx + 1}. {formatarTitulo(item.chave)}
                   </span>
                 </button>
               )}

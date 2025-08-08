@@ -1,4 +1,3 @@
-// src/components/SearchResults.tsx
 import { Search } from "lucide-react";
 import { useConteudo } from "@/context/ConteudoContext";
 
@@ -21,11 +20,14 @@ const stripMarkdown = (md: string) =>
     .replace(/^\s*[-+*]\s+/gm, ""); // remove lista (-, +, *)
 
 const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProps) => {
-  const { conteudo, menu } = useConteudo();
+  const { conteudo, carregarMenu } = useConteudo();
+
+  // Pega o menu atualizado via carregarMenu (array de {chave, titulo, pai?})
+  const menu = carregarMenu();
 
   // monta array pesquisável
   const searchableContent = menu.map(item => {
-    const raw = conteudo[item.chave] || "";
+    const raw = conteudo[item.chave]?.valor || "";
     const lower = raw.toLowerCase();
     const isSubsecao = Boolean(item.pai);
     const parent = isSubsecao

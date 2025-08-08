@@ -17,7 +17,8 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
 
     const rawMd =
-      conteudo[topic] ?? `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
+      conteudo[topic]?.valor ??
+      `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
 
     // Remove o primeiro título (geralmente "# topic")
     const mdWithoutFirstTitle = rawMd.replace(/^#\s+.*\n?/, '')
@@ -41,15 +42,11 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
     <article className="bg-white px-6 pt-0 pb-8 flex flex-col">
       {/* 1) Título principal da seção */}
       {title && (
-        <h1 className="mt-0 text-3xl font-bold text-gray-900 mb-2">
-          {title}
-        </h1>
+        <h1 className="mt-0 text-3xl font-bold text-gray-900 mb-2">{title}</h1>
       )}
 
       {/* 2) Data fixa */}
-      <div className="text-sm text-gray-500 mb-4">
-        Última atualização: Julho 2025
-      </div>
+      <div className="text-sm text-gray-500 mb-4">Última atualização: Julho 2025</div>
 
       {/* 3) Linha divisória */}
       <hr className="border-gray-200 mb-6" />
