@@ -9,9 +9,8 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-2 text-blue-300">Sobre</h3>
             <div className="space-y-1 text-gray-300">
-              <p>© 2025 Polar Comercial</p>
+              <p>© 2025 Polar</p>
               <p>Playbook Comercial desenvolvido para uso interno</p>
-              <p>Última atualização: Julho 2025</p>
             </div>
           </div>
 
@@ -62,7 +61,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-4 pt-3 text-center text-gray-400 text-sm">
-          <p>Polar - Componentes Tecnológicos para Construção Civil</p>
+          <p>Polar Componentes</p>
         </div>
       </div>
     </footer>

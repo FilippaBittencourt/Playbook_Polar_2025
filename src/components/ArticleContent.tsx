@@ -8,7 +8,6 @@ interface ArticleContentProps {
 
 const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
   const { conteudo } = useConteudo()
-
   const [title, setTitle] = useState<string>('')
   const [bodyHtml, setBodyHtml] = useState<string>('')
 
@@ -41,7 +40,7 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
       )}
 
       {/* 2) Data fixa */}
-      <div className="text-sm text-gray-500 mb-4">Última atualização: Julho 2025</div>
+      <div className="text-sm text-gray-500 mb-4">Última atualização: Agosto 2025</div>
 
       {/* 3) Linha divisória */}
       <hr className="border-gray-200 mb-6" />
