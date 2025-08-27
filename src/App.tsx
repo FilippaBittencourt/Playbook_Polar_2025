@@ -45,6 +45,7 @@ const App = () => (
               element={
                 <PrivateRoute adminOnly>
                   <>
+                    <AdminHeader />  {/* botão “Sair” */}
                     <Admin />
                   </>
                 </PrivateRoute>

@@ -1,8 +1,5 @@
-'use client';
-
-import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import { ContentItem, ContentService } from "@/services/contentService";
+import { useConteudo } from "@/context/ConteudoContext";
 
 interface SearchResultsProps {
   query: string;
@@ -10,71 +7,61 @@ interface SearchResultsProps {
   handleTopicSelect: (topic: string) => void;
 }
 
-// Remove HTML básico
-const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "");
+// Remove marcações HTML básicas (tags)
+const stripHtml = (html: string) =>
+  html.replace(/<[^>]+>/g, "");
 
-// Remove Markdown básico
+// Remove marcações Markdown básicas
 const stripMarkdown = (md: string) =>
   md
-    .replace(/^#+\s*/gm, "") // remove #, ## etc
-    .replace(/\*\*|__|\*|_/g, "") // remove **, __, *, _
-    .replace(/`/g, "") // remove backticks
-    .replace(/^\s*[-+*]\s+/gm, ""); // remove listas
+    .replace(/^#+\s*/gm, "")       // remove #, ## etc.
+    .replace(/\*\*|__|\*|_/g, "")  // remove **, __, *, _
+    .replace(/`+/g, "")            // remove backticks
+    .replace(/^\s*[-+*]\s+/gm, ""); // remove lista (-, +, *)
 
 const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProps) => {
-  const [content, setContent] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { conteudo, carregarMenu } = useConteudo();
 
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const data = await ContentService.getAll();
-        setContent(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchContent();
-  }, []);
+  // Pega o menu atualizado via carregarMenu (array de {chave, titulo, pai?})
+  const menu = carregarMenu();
 
   // monta array pesquisável
-  const searchableContent = content.map(item => {
-    const lower = item.value.toLowerCase();
-    const isSubsecao = Boolean(item.dad);
-    const parent = isSubsecao ? content.find(c => c.key === item.dad)?.title : undefined;
-    const subsections = content
-      .filter(c => c.dad === item.key)
-      .map(c => c.title);
+  const searchableContent = menu.map(item => {
+    const raw = conteudo[item.chave]?.valor || "";
+    const lower = raw.toLowerCase();
+    const isSubsecao = Boolean(item.pai);
+    const parent = isSubsecao
+      ? menu.find(m => m.chave === item.pai)?.titulo
+      : undefined;
+    const subsections = menu
+      .filter(m => m.pai === item.chave)
+      .map(m => m.titulo);
 
     return {
-      key: item.key,
-      title: item.title,
+      chave: item.chave,
+      title: item.titulo,
       type: isSubsecao ? "seção" : "página",
       parent,
       sections: subsections,
-      raw: item.value,
+      raw,
       lower,
     };
   });
 
   const term = query.trim().toLowerCase();
+
+  // filtra por título, conteúdo ou subseções
   const results = searchableContent.filter(item =>
     item.title.toLowerCase().includes(term) ||
     item.lower.includes(term) ||
     item.sections.some(sec => sec.toLowerCase().includes(term))
   );
 
-  const onClickResult = (key: string) => {
+  const onClickResult = (chave: string) => {
     setQuery("");
-    handleTopicSelect(key);
+    handleTopicSelect(chave);
     window.location.hash = "";
   };
-
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
 
   return (
     <article className="bg-white">
@@ -100,24 +87,27 @@ const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProp
       ) : (
         <div className="space-y-6">
           {results.map((item, idx) => {
+            // primeiro remove HTML, depois limpa Markdown e remove eventual título na primeira linha
             const noHtml = stripHtml(item.raw);
             const plain = stripMarkdown(noHtml);
             const lines = plain
               .split(/\r?\n/)
               .map(l => l.trim())
               .filter(l => l);
-
             if (lines[0]?.toLowerCase() === item.title.toLowerCase()) {
               lines.shift();
             }
-
             const snippetBase = lines.join(" ");
-            const snippet = snippetBase.length > 200 ? snippetBase.slice(0, 200) + "..." : snippetBase;
+            // truncamento + três pontinhos
+            const snippet =
+              snippetBase.length > 200
+                ? snippetBase.slice(0, 200) + "..."
+                : snippetBase;
 
             return (
               <button
                 key={idx}
-                onClick={() => onClickResult(item.key)}
+                onClick={() => onClickResult(item.chave)}
                 className="w-full text-left bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-3">
@@ -138,7 +128,11 @@ const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProp
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-600 text-sm leading-relaxed mb-3">{snippet}</p>
+
+                <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                  {snippet}
+                </p>
+
                 {item.sections.length > 0 && (
                   <div className="border-t border-gray-100 pt-3">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">
@@ -146,7 +140,10 @@ const SearchResults = ({ query, setQuery, handleTopicSelect }: SearchResultsProp
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {item.sections.map((sec, sidx) => (
-                        <span key={sidx} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                        <span
+                          key={sidx}
+                          className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
+                        >
                           {sec}
                         </span>
                       ))}

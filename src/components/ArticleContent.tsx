@@ -1,83 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { useConteudo } from '@/context/ConteudoContext';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import remarkGfm from 'remark-gfm';
+import React, { useEffect, useState } from 'react'
+import { marked } from 'marked'
+import { useConteudo } from '@/context/ConteudoContext'
 
 interface ArticleContentProps {
-  topic: string;
+  topic: string
 }
 
-// Componentes customizados para blocos especiais
-const BlocoDestaque: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="bloco-destaque bg-blue-50 p-4 border-l-4 border-blue-500 rounded my-4">
-    {children}
-  </div>
-);
-
-const CardDestaque: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="card-destaque p-4 border rounded shadow-sm my-2 bg-white">
-    <h4 className="font-semibold text-lg mb-2">{title}</h4>
-    <div className="text-gray-600 text-sm">{children}</div>
-  </div>
-);
-
 const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
-  const { conteudo } = useConteudo();
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+  const { conteudo } = useConteudo()
+  const [title, setTitle] = useState<string>('')
+  const [bodyHtml, setBodyHtml] = useState<string>('')
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Rola para o topo ao trocar de seção
+    window.scrollTo({ top: 0, behavior: 'smooth' })
 
-    const item = conteudo[topic];
-    setTitle(item?.title || topic);
+    const rawMd =
+      conteudo[topic]?.valor ??
+      `# ${topic}\n\nConteúdo da seção "${topic}" ainda não configurado.`
 
-    let text = item?.value ?? `Conteúdo da seção "${topic}" ainda não configurado.`;
-    text = text.replace(/\\n/g, '\n'); // substitui \n literal
+    // Extrai o primeiro título (linha que começa com # )
+    const firstTitleMatch = rawMd.match(/^#\s+(.*)/)
+    const extractedTitle = firstTitleMatch ? firstTitleMatch[1].trim() : topic
+    setTitle(extractedTitle)
 
-    setContent(text);
-  }, [topic, conteudo]);
+    // Remove o primeiro título do markdown para o corpo
+    const mdWithoutFirstTitle = rawMd.replace(/^#\s+.*\n?/, '').trim()
 
-  // Define componentes customizados para Markdown
-  const components = {
-    div: ({ node, ...props }: any) => {
-      const className = props.className || '';
-
-      if (className.includes('bloco-destaque')) return <BlocoDestaque {...props} />;
-      if (className.includes('card-destaque')) {
-        const titleEl = React.Children.toArray(props.children).find(
-          (child: any) => child.props?.className?.includes('h4-card')
-        );
-        const cardTitle = titleEl ? (titleEl as any).props.children : 'Card';
-        return <CardDestaque title={cardTitle}>{props.children}</CardDestaque>;
-      }
-
-      return <div {...props} />;
-    },
-    // Mapear outros elementos HTML se necessário
-  };
+    // Converte o restante para HTML
+    const html = marked.parse(mdWithoutFirstTitle, { async: false })
+    setBodyHtml(html)
+  }, [topic, conteudo])
 
   return (
     <article className="bg-white px-6 pt-0 pb-8 flex flex-col">
+      {/* 1) Título principal da seção */}
       {title && (
         <h1 className="mt-0 text-3xl font-bold text-gray-900 mb-2">{title}</h1>
       )}
 
+      {/* 2) Data fixa */}
       <div className="text-sm text-gray-500 mb-4">Última atualização: Agosto 2025</div>
 
+      {/* 3) Linha divisória */}
       <hr className="border-gray-200 mb-6" />
 
-      <div className="prose prose-blue prose-lg max-w-none">
-        <ReactMarkdown
-          children={content}
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeRaw]}
-          components={components}
-        />
-      </div>
+      {/* 4) Corpo do Markdown renderizado */}
+      <div
+        className="prose prose-blue prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: bodyHtml }}
+      />
     </article>
-  );
-};
+  )
+}
 
-export default ArticleContent;
+export default ArticleContent
