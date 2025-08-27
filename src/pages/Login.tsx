@@ -1,76 +1,50 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/context/AuthContext';
-
-const API_URL = 'https://backend-playbook-production.up.railway.app';
-
-const CHAVE_USER = '57jFx><36#8I';
-const CHAVE_ADMIN = 'z2d|MO7.QW2]';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
+import { loginUser } from "@/services/authService";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [verificando, setVerificando] = useState(true);
 
   const navigate = useNavigate();
-  const { setUsuario } = useAuth();
+  const { setUsuario, isLogged, isAdmin } = useAuth();
 
+  // Verifica se já existe login válido no cookie
   useEffect(() => {
-    // agora a verificação pode ser só por cookie (se quiser)
-    const verificarLogin = () => {
-      const match = document.cookie.match(/(^| )chaveSecreta=([^;]+)/);
-      if (match) {
-        setUsuario(username);
-        if (match[2] === CHAVE_ADMIN) {
-          navigate('/admin');
-        } else {
-          navigate('/home');
-        }
-      }
-      setVerificando(false);
-    };
-    verificarLogin();
-  }, [navigate, setUsuario]);
+    if (isLogged) {
+      navigate(isAdmin ? "/admin" : "/home");
+    }
+    setVerificando(false);
+  }, [isLogged, isAdmin, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ login: username, senha: password }),
-      });
+      const result = await loginUser(username, password);
 
-      const data = await response.json();
+      if (result.success && result.user) {
+        // Atualiza o contexto
+        setUsuario(username === "admin" ? "admin" : "user");
 
-      if (data.sucesso) {
-        setUsuario(username);
-
-        // Define chave secreta conforme o tipo de usuário
-        if (username === 'admin') {
-          document.cookie = `chaveSecreta=${encodeURIComponent(CHAVE_ADMIN)}; path=/; secure; samesite=strict; max-age=${60 * 60 * 24 * 7}`;
-          navigate('/admin');
-        } else {
-          document.cookie = `chaveSecreta=${encodeURIComponent(CHAVE_USER)}; path=/; secure; samesite=strict; max-age=${60 * 60 * 24 * 7}`;
-          navigate('/home');
-        }
-
+        // Redireciona automaticamente conforme tipo
+        navigate(username === "admin" ? "/admin" : "/home");
       } else {
-        setError(data.mensagem || 'Usuário ou senha inválidos.');
+        setError(result.message || "Usuário ou senha inválidos.");
       }
     } catch (err) {
       console.error(err);
-      setError('Erro na conexão com o servidor.');
+      setError("Erro inesperado no login.");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +55,9 @@ const Login = () => {
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex flex-col items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600 border-solid mb-4"></div>
-          <p className="text-gray-600 text-lg font-medium">Verificando autenticação...</p>
+          <p className="text-gray-600 text-lg font-medium">
+            Verificando autenticação...
+          </p>
         </div>
       </div>
     );
@@ -98,13 +74,17 @@ const Login = () => {
               className="h-10 w-auto mx-auto"
             />
           </div>
-          <h1 className="text-2xl font-bold text-blue-600">Playbook Comercial</h1>
+          <h1 className="text-2xl font-bold text-blue-600">
+            Playbook Comercial
+          </h1>
           <p className="text-gray-600">Acesso restrito a colaboradores</p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-gray-800 font-semibold text-center">Login</CardTitle>
+            <CardTitle className="text-gray-800 font-semibold text-center">
+              Login
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -149,7 +129,7 @@ const Login = () => {
                 disabled={isLoading}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-base"
               >
-                {isLoading ? 'Entrando...' : 'Entrar'}
+                {isLoading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
           </CardContent>

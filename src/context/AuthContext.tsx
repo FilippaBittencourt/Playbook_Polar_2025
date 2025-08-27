@@ -1,31 +1,24 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { validarLogin, logoutUser } from "@/services/authService";
 
 type AuthContextType = {
-  usuario: string | null; // 'admin', 'user' ou null
-  setUsuario: (usuario: string | null) => void;
+  usuario: "admin" | "user" | null;
+  setUsuario: (usuario: "admin" | "user" | null) => void;
+  isAdmin: boolean;
+  isLogged: boolean;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const CHAVE_USER = '57jFx><36#8I';
-const CHAVE_ADMIN = 'z2d|MO7.QW2]';
-
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  if (match) return decodeURIComponent(match[2]);
-  return null;
-}
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [usuario, setUsuario] = useState<string | null>(null);
+  const [usuario, setUsuario] = useState<"admin" | "user" | null>(null);
 
+  // Atualiza estado baseado no cookie
   const verificarLogin = () => {
-    const valorCookie = getCookie('chaveSecreta');
-
-    if (valorCookie === CHAVE_ADMIN) {
-      setUsuario('admin');
-    } else if (valorCookie === CHAVE_USER) {
-      setUsuario('user');
+    const resultado = validarLogin();
+    if (resultado.isLogged) {
+      setUsuario(resultado.isAdmin ? "admin" : "user");
     } else {
       setUsuario(null);
     }
@@ -35,8 +28,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     verificarLogin();
   }, []);
 
+  const logout = () => {
+    logoutUser();
+    setUsuario(null);
+  };
+
+  const isAdmin = usuario === "admin";
+  const isLogged = !!usuario;
+
   return (
-    <AuthContext.Provider value={{ usuario, setUsuario }}>
+    <AuthContext.Provider
+      value={{ usuario, setUsuario, isAdmin, isLogged, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth deve ser usado dentro de AuthProvider');
+    throw new Error("useAuth deve ser usado dentro de AuthProvider");
   }
   return context;
 };

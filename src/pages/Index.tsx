@@ -1,26 +1,28 @@
-// src/pages/index.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import Footer from "@/components/Footer";
-
-// Função utilitária para formatar títulos vindos do conteúdo
-const formatarTitulo = (chave: string) => {
-  // Pode personalizar: trocar underscores por espaço, capitalizar, etc.
-  return chave
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
-};
+import { useConteudo } from "@/context/ConteudoContext";
 
 const Index = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [selectedTopic, setSelectedTopic] = useState("Home");
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [query, setQuery] = useState("");
 
-  const handleTopicSelect = (topic: string) => {
-    setSelectedTopic(topic);
-    // Remove a hash da URL se estiver em modo de busca
+  const { conteudo, carregarMenu } = useConteudo();
+
+  // Inicializa o selectedTopic com a key "home" quando o conteúdo estiver carregado
+  useEffect(() => {
+    const menu = carregarMenu();
+    const homeItem = menu.find(item => item.key === "home");
+    if (homeItem) {
+      setSelectedTopic(homeItem.key);
+    }
+  }, [conteudo]);
+
+  const handleTopicSelect = (topicKey: string) => {
+    setSelectedTopic(topicKey);
     if (window.location.hash.startsWith("#search")) {
       window.location.hash = "";
     }
@@ -28,19 +30,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header
-        onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
-        query={query}
-        setQuery={setQuery}
-      />
-
+      <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} query={query} setQuery={setQuery} />
       <div className="flex flex-1">
         <Sidebar
           isOpen={sidebarOpen}
           handleTopicSelect={handleTopicSelect}
-          formatarTitulo={formatarTitulo}
         />
-
         <MainContent
           selectedTopic={selectedTopic}
           sidebarOpen={sidebarOpen}
@@ -48,7 +43,6 @@ const Index = () => {
           setQuery={setQuery}
         />
       </div>
-
       <Footer />
     </div>
   );
