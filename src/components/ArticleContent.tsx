@@ -15,9 +15,8 @@ const BlocoDestaque: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   </div>
 );
 
-const CardDestaque: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="card-destaque p-4 border rounded shadow-sm my-2 bg-white">
-    <h4 className="font-semibold text-lg mb-2">{title}</h4>
+const CardDestaque: React.FC<{ title: string; children: React.ReactNode }> = ({ children }) => (
+  <div className="card-destaque border rounded shadow-sm bg-white">
     <div className="text-gray-600 text-sm">{children}</div>
   </div>
 );
