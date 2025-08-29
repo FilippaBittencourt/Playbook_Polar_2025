@@ -6,6 +6,18 @@ interface ArticleContentProps {
   topic: string
 }
 
+const BlocoDestaque: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="bloco-destaque bg-blue-50 p-4 border-l-4 border-blue-500 rounded my-4">
+    {children}
+  </div>
+);
+
+const CardDestaque: React.FC<{ title: string; children: React.ReactNode }> = ({ children }) => (
+  <div className="card-destaque border rounded shadow-sm bg-white">
+    <div className="text-gray-600 text-sm">{children}</div>
+  </div>
+);
+
 const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
   const { conteudo } = useConteudo()
   const [title, setTitle] = useState<string>('')
