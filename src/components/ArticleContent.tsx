@@ -63,7 +63,7 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
         <h1 className="mt-0 text-3xl font-bold text-gray-900 mb-2">{title}</h1>
       )}
 
-      <div className="text-sm text-gray-500 mb-4">Última atualização: Agosto 2025</div>
+      <div className="text-sm text-gray-500 mb-4">Última atualização: Setembro 2025</div>
 
       <hr className="border-gray-200 mb-6" />
 

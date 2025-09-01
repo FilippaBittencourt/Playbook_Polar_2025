@@ -195,7 +195,7 @@
 }
 
 .imagem-pequena {
-    @apply w-64 h-64 mx-auto mt-8 mb-8 rounded-lg
+    @apply w-32 h-32 mx-auto mt-8 mb-8 rounded-lg
            transition-transform duration-300 ease-in-out
            shadow-[0_2px_6px_rgba(0,0,0,0.2)];
   }
