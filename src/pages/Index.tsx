@@ -15,11 +15,11 @@ const Index = () => {
   // Inicializa o selectedTopic com a key "home" quando o conteúdo estiver carregado
   useEffect(() => {
     const menu = carregarMenu();
-    const homeItem = menu.find(item => item.key === "home");
+    const homeItem = menu.find((item) => item.key === "home");
     if (homeItem) {
       setSelectedTopic(homeItem.key);
     }
-  }, [conteudo]);
+  }, [conteudo, carregarMenu]);
 
   const handleTopicSelect = (topicKey: string) => {
     setSelectedTopic(topicKey);
@@ -30,12 +30,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} query={query} setQuery={setQuery} />
+      <Header
+        isMenuOpen={sidebarOpen}                         // <<--- passa o estado real do menu
+        onMenuToggle={() => setSidebarOpen(!sidebarOpen)} // <<--- alterna o menu
+        query={query}
+        setQuery={setQuery}
+      />
+
       <div className="flex flex-1">
         <Sidebar
           isOpen={sidebarOpen}
           handleTopicSelect={handleTopicSelect}
         />
+
         <MainContent
           selectedTopic={selectedTopic}
           sidebarOpen={sidebarOpen}
@@ -43,6 +50,7 @@ const Index = () => {
           setQuery={setQuery}
         />
       </div>
+
       <Footer />
     </div>
   );

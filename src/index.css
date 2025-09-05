@@ -172,13 +172,18 @@
 }
 
 .organograma .org-node {
-  @apply w-[150px] mx-8 text-center;
+  @apply flex flex-col items-center text-center;
+  width: 180px; /* ou 200px - todos ficam com o mesmo espaço */
+  margin: 0 16px;
 }
 
 .organograma .org-node img {
-  @apply w-full h-auto rounded-full object-cover
-         transition-transform duration-300 ease-in-out
-         shadow-[0_2px_6px_rgba(0,0,0,0.2)];
+  width: 150px;   /* largura fixa */
+  height: 150px;  /* altura fixa */
+  border-radius: 9999px;
+  object-fit: cover; /* corta a imagem sem distorcer */
+  flex-shrink: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .organograma .org-node h3,

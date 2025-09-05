@@ -1,22 +1,23 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Menu, Search, LogOut, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
-  onMenuToggle: () => void;
+  onMenuToggle: () => void;         // dispara a abertura/fechamento do menu (controlado pelo pai)
+  isMenuOpen: boolean;              // estado real do menu vindo do pai
   query: string;
   setQuery: (value: string) => void;
 }
 
-const Header = ({ onMenuToggle, query, setQuery }: HeaderProps) => {
+const Header = ({ onMenuToggle, isMenuOpen, query, setQuery }: HeaderProps) => {
   const [showSearch, setShowSearch] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = () => {
     if (query.trim()) {
       window.location.hash = `#search?q=${encodeURIComponent(query.trim())}`;
-      setShowSearch(false); // fecha após pesquisar
+      setShowSearch(false);
     }
   };
 
@@ -29,10 +30,7 @@ const Header = ({ onMenuToggle, query, setQuery }: HeaderProps) => {
   // Fecha a busca ao clicar fora (mobile)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSearch(false);
       }
     };
@@ -56,16 +54,19 @@ const Header = ({ onMenuToggle, query, setQuery }: HeaderProps) => {
           <button
             onClick={onMenuToggle}
             className="text-white hover:bg-blue-600 p-2 rounded transition-colors"
-            aria-label="Toggle menu"
+            aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+            aria-expanded={isMenuOpen}
           >
-            <Menu size={24} />
+            {/* Agora: menu aberto → X ; menu fechado → hambúrguer */}
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+
           <a href="/" className="text-white text-xl font-bold">
             Playbook Polar
           </a>
         </div>
 
-        {/* Pesquisa - desktop (sem mudanças) */}
+        {/* Pesquisa - desktop */}
         <div className="hidden md:flex flex-1 max-w-md mx-8 mr-5 relative">
           <form className="relative w-full">
             <button
@@ -148,7 +149,7 @@ const Header = ({ onMenuToggle, query, setQuery }: HeaderProps) => {
               }}
               className="w-full pl-10 pr-10 py-2 bg-white border-none rounded-lg focus:ring-2 focus:ring-blue-300"
             />
-            {/* Botão X ainda disponível se o user quiser fechar manualmente */}
+            {/* Botão X para fechar busca */}
             <button
               type="button"
               onClick={() => setShowSearch(false)}
