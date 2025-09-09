@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
-import { ChevronRight, ChevronDown } from 'lucide-react';
-import { useConteudo } from '@/context/ConteudoContext';
-import { ContentItem } from '@/services/contentService';
+import * as React from "react";
+import { ChevronRight, ChevronDown } from "lucide-react";
+import { useConteudo } from "@/context/ConteudoContext";
+import { ContentItem } from "@/services/contentService";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SidebarProps {
   isOpen: boolean;
   handleTopicSelect: (topic: string) => void;
+  onClose: () => void;
 }
 
-const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
-  const [expanded, setExpanded] = useState<string[]>([]);
+const Sidebar = ({ isOpen, handleTopicSelect, onClose }: SidebarProps) => {
+  const [expanded, setExpanded] = React.useState<string[]>([]);
   const { conteudo } = useConteudo();
+  const isMobile = useIsMobile();
 
   const menu: ContentItem[] = Object.values(conteudo);
 
@@ -20,7 +23,7 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
     );
   };
 
-  // agrupa dad → filhos
+  // Agrupa dad → filhos
   const roots = menu.filter(item => !item.dad);
   const childrenMap: Record<string, ContentItem[]> = {};
   menu.forEach(item => {
@@ -30,41 +33,48 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
     }
   });
 
-  // 🔒 Travar scroll sem flicker: aplicar overflow hidden no <html> e <body>
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
+  // ✅ Fechar menu ao selecionar tópico (MOBILE + DESKTOP)
+  const handleSelect = (topic: string) => {
+    handleTopicSelect(topic);
+    onClose(); // <- removido o if (isMobile)
+  };
+
+  // 🔒 Travar scroll sem flicker no mobile
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
     if (!mq.matches) return;
 
     const html = document.documentElement;
     const body = document.body;
 
     if (isOpen) {
-      html.style.overflow = 'hidden';
-      body.style.overflow = 'hidden';
-      (body.style as any).touchAction = 'none';
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      (body.style as any).touchAction = "none";
     } else {
-      html.style.overflow = '';
-      body.style.overflow = '';
-      (body.style as any).touchAction = '';
+      html.style.overflow = "";
+      body.style.overflow = "";
+      (body.style as any).touchAction = "";
     }
 
     return () => {
-      html.style.overflow = '';
-      body.style.overflow = '';
-      (body.style as any).touchAction = '';
+      html.style.overflow = "";
+      body.style.overflow = "";
+      (body.style as any).touchAction = "";
     };
   }, [isOpen]);
 
   return (
     <>
-      {/* OVERLAY */}
+      {/* OVERLAY (mantém só no mobile; se quiser no desktop também, remova `md:hidden`) */}
       <div
         className={`
           fixed left-0 right-0 top-16 bottom-0 bg-black/50
           transition-opacity duration-300
-          ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+          ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
           z-40 md:hidden
         `}
+        onClick={onClose}
       />
 
       {/* SIDEBAR */}
@@ -73,7 +83,7 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
           fixed left-0 top-16
           h-[calc(100dvh-4rem)] bg-blue-800 text-white
           transition-transform duration-300
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
           w-72 md:w-80
           overflow-y-auto overscroll-contain
           z-50 md:z-40
@@ -93,17 +103,18 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
                       <span className="font-medium">
                         {idx + 1}. {item.title || item.key}
                       </span>
-                      {expanded.includes(item.key)
-                        ? <ChevronDown className="h-4 w-4" />
-                        : <ChevronRight className="h-4 w-4" />
-                      }
+                      {expanded.includes(item.key) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
                     </button>
                     {expanded.includes(item.key) && (
                       <ul className="ml-3 md:ml-4 mt-1 md:mt-2 space-y-1">
                         {childrenMap[item.key].map((sub, subIdx) => (
                           <li key={sub.key}>
                             <button
-                              onClick={() => handleTopicSelect(sub.key)}
+                              onClick={() => handleSelect(sub.key)}
                               className="w-full text-left p-2 pl-3 md:pl-4 rounded hover:bg-blue-700/50 text-blue-100 text-xs md:text-sm transition-colors"
                               type="button"
                             >
@@ -116,7 +127,7 @@ const Sidebar = ({ isOpen, handleTopicSelect }: SidebarProps) => {
                   </>
                 ) : (
                   <button
-                    onClick={() => handleTopicSelect(item.key)}
+                    onClick={() => handleSelect(item.key)}
                     className="w-full text-left p-2.5 md:p-3 rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
                     type="button"
                   >

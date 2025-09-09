@@ -173,7 +173,7 @@
 
 .organograma .org-node {
   @apply flex flex-col items-center text-center;
-  width: 180px; /* ou 200px - todos ficam com o mesmo espaço */
+  width: 180px; /* ou 200px - todos iguais */
   margin: 0 16px;
 }
 
@@ -181,7 +181,7 @@
   width: 150px;   /* largura fixa */
   height: 150px;  /* altura fixa */
   border-radius: 9999px;
-  object-fit: cover; /* corta a imagem sem distorcer */
+  object-fit: cover; /* corta sem distorcer */
   flex-shrink: 0;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -200,10 +200,101 @@
 }
 
 .imagem-pequena {
-    @apply w-32 h-32 mx-auto mt-8 mb-8 rounded-lg
-           transition-transform duration-300 ease-in-out
-           shadow-[0_2px_6px_rgba(0,0,0,0.2)];
+  @apply w-32 h-32 mx-auto mt-8 mb-8 rounded-lg
+         transition-transform duration-300 ease-in-out
+         shadow-[0_2px_6px_rgba(0,0,0,0.2)];
+}
+.imagem-pequena:hover {
+  @apply scale-105 shadow-xl;
+}
+
+/* -------------------------------------------------------
+   FIXO **SÓ** PARA MOBILE (<= 767.98px)
+   Colocado no final e fora de @layer p/ garantir prioridade
+-------------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .organograma {
+    padding-left: 1rem;   /* px-4 */
+    padding-right: 1rem;
   }
-  .imagem-pequena:hover {
-    @apply scale-105 shadow-xl;
+
+  /* Estilo base dos cards no mobile */
+  .organograma .org-node {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 24px;
   }
+
+  .organograma .org-node img {
+    width: 128px;
+    height: 128px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .organograma .org-node h3,
+  .organograma .org-node h4 {
+    white-space: normal;
+    text-align: center;
+    font-size: 1rem;      /* ~text-base */
+    line-height: 1.2;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .organograma .org-node p {
+    text-align: center;
+    font-size: 0.75rem;   /* ~text-xs */
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* ---------- Nível 1 (CEO: Chico) ---------- */
+  .organograma .org-row:nth-of-type(1) {
+    display: grid;
+    grid-template-columns: 1fr;   /* 1 coluna */
+    justify-items: center;
+    gap: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  /* ---------- Nível 2 e 3
+     (Linha com 4 pessoas: Vinicius, Fernando, Laís, Ítalo)
+     Queremos:
+       - Linha 1: Vinicius (1) + Ítalo (4)
+       - Linha 2: Fernando (2) + Laís (3)
+  -------------------------------------------- */
+  .organograma .org-row:nth-of-type(2) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  /* 2 colunas */
+    justify-items: center;
+    gap: 1.5rem 1rem;                 /* row/col gap */
+    margin-bottom: 0;
+  }
+  /* Posicionamento específico (grid) */
+  .organograma .org-row:nth-of-type(2) .org-node:nth-child(1) { grid-column: 1; grid-row: 1; } /* Vinicius */
+  .organograma .org-row:nth-of-type(2) .org-node:nth-child(4) { grid-column: 2; grid-row: 1; } /* Ítalo   */
+  .organograma .org-row:nth-of-type(2) .org-node:nth-child(2) { grid-column: 1; grid-row: 2; } /* Fernando*/
+  .organograma .org-row:nth-of-type(2) .org-node:nth-child(3) { grid-column: 2; grid-row: 2; } /* Laís    */
+
+  /* ---------- Nível 4 e 5
+     (Linha com 3 pessoas: Anyelle, Jorge, Chrystian)
+     Queremos:
+       - Linha 1: Anyelle (1) + Jorge (2)
+       - Linha 2: Chrystian (3) sozinho (largura total)
+  -------------------------------------------- */
+  .organograma .org-row:nth-of-type(3) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  /* 2 colunas */
+    justify-items: center;
+    gap: 1.5rem 1rem;
+    margin-bottom: 0;
+  }
+  .organograma .org-row:nth-of-type(3) .org-node:nth-child(1) { grid-column: 1; grid-row: 1; } /* Anyelle   */
+  .organograma .org-row:nth-of-type(3) .org-node:nth-child(2) { grid-column: 2; grid-row: 1; } /* Jorge     */
+  .organograma .org-row:nth-of-type(3) .org-node:nth-child(3) {
+    grid-column: 1 / -1;  /* ocupa as 2 colunas */
+    grid-row: 2;          /* vai pra segunda linha */
+    max-width: 320px;     /* só pra não ficar esticado demais */
+  }
+}
