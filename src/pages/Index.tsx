@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import { useConteudo } from "@/context/ConteudoContext";
 
 const Index = () => {
-  // ✅ começa FECHADO
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState<string>("");
   const [query, setQuery] = useState("");
@@ -15,7 +14,6 @@ const Index = () => {
   const { conteudo, carregarMenu } = useConteudo();
   const location = useLocation();
 
-  // Inicializa o selectedTopic com a key "home" quando o conteúdo estiver carregado
   useEffect(() => {
     const menu = carregarMenu();
     const homeItem = menu.find((item) => item.key === "home");
@@ -24,12 +22,10 @@ const Index = () => {
     }
   }, [conteudo, carregarMenu]);
 
-  // ✅ garante que o menu esteja fechado no primeiro render
   useEffect(() => {
     setSidebarOpen(false);
   }, []);
 
-  // ✅ fecha o menu a cada mudança de rota (ex.: após login/redirecionamento)
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);

@@ -6,7 +6,7 @@ interface MainContentProps {
   selectedTopic: string;
   sidebarOpen: boolean;
   handleTopicSelect: (topic: string) => void;
-  setQuery: (value: string) => void; // para atualizar o input de busca
+  setQuery: (value: string) => void; 
 }
 
 const MainContent = ({
@@ -32,10 +32,10 @@ const MainContent = ({
     const onHashChange = () => {
       const q = parseQueryFromHash();
       setSearchQuery(q);
-      setQuery(q || ""); // atualiza o campo de busca
+      setQuery(q || ""); 
     };
 
-    onHashChange(); // roda no load para pegar o hash atual
+    onHashChange();
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, [setQuery]);

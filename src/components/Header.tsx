@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
-  onMenuToggle: () => void;         // dispara a abertura/fechamento do menu (controlado pelo pai)
-  isMenuOpen: boolean;              // estado real do menu vindo do pai
+  onMenuToggle: () => void;         
+  isMenuOpen: boolean; 
   query: string;
   setQuery: (value: string) => void;
 }

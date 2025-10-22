@@ -1,4 +1,3 @@
-// src/components/AdminHeader.tsx
 import React, { ReactNode } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { logoutUser } from "@/services/authService";

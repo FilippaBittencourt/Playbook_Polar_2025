@@ -8,7 +8,6 @@ export type LoginResponse = {
   user?: any;
 };
 
-// Pegue as chaves do .env
 const USER_KEY = import.meta.env.VITE_USER_KEY!;
 const ADMIN_KEY = import.meta.env.VITE_ADMIN_KEY!;
 

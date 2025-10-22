@@ -9,7 +9,6 @@ const ProtectedRedirect = () => {
 
   useEffect(() => {
     if (isLogged) {
-      // Admin também pode acessar home
       navigate("/home", { replace: true });
     } else {
       navigate("/login", { replace: true });

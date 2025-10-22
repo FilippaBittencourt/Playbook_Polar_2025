@@ -1,4 +1,3 @@
-// src/components/AdminSidebar.tsx
 import { useState } from 'react';
 
 interface ConteudoItem {

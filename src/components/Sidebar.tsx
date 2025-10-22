@@ -23,7 +23,6 @@ const Sidebar = ({ isOpen, handleTopicSelect, onClose }: SidebarProps) => {
     );
   };
 
-  // Agrupa dad → filhos
   const roots = menu.filter(item => !item.dad);
   const childrenMap: Record<string, ContentItem[]> = {};
   menu.forEach(item => {
@@ -33,13 +32,11 @@ const Sidebar = ({ isOpen, handleTopicSelect, onClose }: SidebarProps) => {
     }
   });
 
-  // ✅ Fechar menu ao selecionar tópico (MOBILE + DESKTOP)
   const handleSelect = (topic: string) => {
     handleTopicSelect(topic);
-    onClose(); // <- removido o if (isMobile)
+    onClose(); 
   };
 
-  // 🔒 Travar scroll sem flicker no mobile
   React.useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     if (!mq.matches) return;

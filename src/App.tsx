@@ -1,4 +1,3 @@
-// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +11,7 @@ import NotFound from "./pages/NotFound";
 import ProtectedRedirect from "./components/ProtectedRedirect";
 import PrivateRoute from "./components/PrivateRoute";
 import Admin from "./pages/Admin";
-import { AdminHeader } from "@/components/AdminHeader"; // ← certifique-se de criar este componente em src/components/AdminHeader.tsx
+import { AdminHeader } from "@/components/AdminHeader";
 
 import { ConteudoProvider } from "./context/ConteudoContext";
 

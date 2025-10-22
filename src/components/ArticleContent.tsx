@@ -8,7 +8,6 @@ interface ArticleContentProps {
   topic: string;
 }
 
-// Componentes customizados para blocos especiais
 const BlocoDestaque: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="bloco-destaque bg-blue-50 p-4 border-l-4 border-blue-500 rounded my-4">
     {children}
@@ -59,7 +58,6 @@ const ArticleContent: React.FC<ArticleContentProps> = ({ topic }) => {
 
       return <div {...props} />;
     },
-    // Mapear outros elementos HTML se necessário
   };
 
   return (

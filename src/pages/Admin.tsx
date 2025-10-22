@@ -17,7 +17,7 @@ const Admin = () => {
   const [previewAtivo, setPreviewAtivo] = useState<boolean>(false);
 
   const [novaChave, setNovaChave] = useState<string>('');
-  const [novoTitulo, setNovoTitulo] = useState<string>(''); // NOVO
+  const [novoTitulo, setNovoTitulo] = useState<string>(''); 
   const [novoDad, setNovoDad] = useState<string>('');
 
   // Carregar conteúdo da seleção atual
